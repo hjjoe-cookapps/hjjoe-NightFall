@@ -2,7 +2,6 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
-.utmp/
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -10,7 +9,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
-*.log
+/[Cc]ode[Cc]overage/
+/[Uu]I[Ee]lements[Ss]chema/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -61,7 +61,6 @@ sysinfo.txt
 *.apk
 *.aab
 *.unitypackage
-*.unitypackage.meta
 *.app
 
 # Crashlytics generated file
@@ -73,3 +72,12 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# JetBrains Rider IDE
+.idea/
+*.DotSettings
+
+# DocFX builds
+/[Aa]ssets/Package/Runtime/obj
+/[Aa]ssets/Package/Runtime/obj.meta
+ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json
