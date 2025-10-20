@@ -43,9 +43,9 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (context.performed.)
+        if (context.performed)
         {
-
+            _character.SetState(CharacterState.);
         }
     }
 
