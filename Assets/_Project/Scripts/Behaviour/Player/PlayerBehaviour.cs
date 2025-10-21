@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using _Project.Scripts.Utils;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using UnityEngine;
@@ -8,19 +11,21 @@ using UnityEngine.InputSystem;
 [Serializable]
 public struct CharacterStatus
 {
-    private int _hp;
-    private int _moveSpeed;
-    private int _regenerationTime;
+    public int Hp;
+    public int MoveSpeed;
+    public int RegenerationTime;
 
-    private int _attackDamage;
-    private int _attackRange;
-    private int _attackTargetCount;
+    public int AttackDamage;
+    public int AttackCooltime;
+    public int AttackRange;
+    public int AttackTargetCount;
 
-    private int _skillDamage;
-    private int _skillCooltime;
-    private int _skillRange;
-    private int _skillSpeed;    // 스킬 애니메이션에 대해서 배속으로 제어할 것
-    private int _skillTargetCount;
+    public int SkillDamage;
+    public int SkillCooltime;
+    public int SkillRange;
+    public int SkillSpeed;    // 스킬 애니메이션에 대해서 배속으로 제어할 것
+    public int SkillTargetCount;
+    public int SkillTime;   // skill 시전 시간
 
 };
 
@@ -28,20 +33,33 @@ public class PlayerBehaviour : MonoBehaviour
 {
     [SerializeField]
     private Character _character;
-
     [SerializeField]
     private Rigidbody _rigidbody;
 
 
-    private StateMachine<PlayerState> _stateMachine;
-
-    private readonly float _moveSpeed = 5f; // temp;
-    private Vector3 _moveInput;
-
     private CharacterStatus _status;
+    private readonly float _moveSpeed = 5f; // temp;
 
+    private bool isSkillActive = false;
+
+    private Vector3 _moveInput;
     private Quaternion _initialRotation;
 
+    private List<MonsterBehaviour> _inRadiusMonsters = new();
+    private readonly StateMachine<PlayerState> _stateMachine = new();
+
+    private Coroutine _scanRadiusMonsterCoroutine;
+
+    #region property
+    public CharacterStatus CharacterStatus => _status;
+    public bool IsSkillActive => isSkillActive;
+    public int Cooltime => isSkillActive ? _status.SkillCooltime : _status.AttackCooltime;
+    public int Range => isSkillActive ? _status.SkillRange : _status.AttackRange;
+    public int TargetCount => isSkillActive ? _status.SkillTargetCount : _status.AttackTargetCount;
+    public List<MonsterBehaviour> InRadiusMonsters => _inRadiusMonsters;
+    public StateMachine<PlayerState> StateMachine => _stateMachine;
+
+    #endregion
 
     private void Awake()
     {
@@ -55,8 +73,13 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Start()
     {
+        // get data code here
+        // _status = ***
+
         _initialRotation = transform.rotation;
         _stateMachine.ChangeState(PlayerState.Idle);
+
+        _scanRadiusMonsterCoroutine = StartCoroutine(ScanRadiusMonsters());
     }
 
     private void FixedUpdate()
@@ -66,7 +89,15 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Update()
     {
+        _stateMachine.Execute();
     }
+
+    /*
+    private void OnDestroy()
+    {
+        StopCoroutine(_scanRadiusMonsterCoroutine);
+    }
+    */
 
     public void OnMove(InputValue value)
     {
@@ -84,20 +115,14 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    public void OnAttack(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            _character.Slash();
-        }
-    }
-
     public void OnSkill(InputValue value)
     {
         if (value.isPressed)
         {
-            _character.Jab();
+            isSkillActive = true;
         }
+
+        StartCoroutine(UpdateSkillTime());
     }
 
     private void FixedMove()
@@ -110,7 +135,7 @@ public class PlayerBehaviour : MonoBehaviour
             return;
         }
 
-        if (_moveInput.x != 0f)
+        if (_stateMachine.CurStateType != PlayerState.Idle && _moveInput.x != 0f)
         {
             transform.rotation = _moveInput.x > 0f
                 ? _initialRotation * Quaternion.Euler(0f, 0f, 0f)
@@ -138,6 +163,44 @@ public class PlayerBehaviour : MonoBehaviour
             {
                 _rigidbody.linearVelocity = Vector3.zero;
             }
+        }
+    }
+
+    private IEnumerator UpdateSkillTime()
+    {
+        // UI와 시간 동기화 필요
+        yield return CoroutineManager.WaitForSeconds(_status.SkillTime);
+        isSkillActive = false;
+    }
+
+    private void UpdateRadiusMonsters()
+    {
+        LayerMask monsterLayer = LayerMask.GetMask("Monster");
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position,
+            Range, monsterLayer);
+        var inRadiusMonsters = new List<(MonsterBehaviour monster, float dist)>();
+
+        foreach (Collider collider in hitColliders)
+        {
+            if (collider.gameObject.TryGetComponent(out MonsterBehaviour monsterBehaviour))
+            {
+                inRadiusMonsters.Add((monsterBehaviour, (transform.position - collider.transform.position).sqrMagnitude));
+            }
+        }
+
+        if (inRadiusMonsters.Count > 0)
+        {
+            // list를 order순으로 정렬해서 저장
+            _inRadiusMonsters = inRadiusMonsters.OrderBy(md => md.dist).Select(md => md.monster).ToList();
+        }
+    }
+
+    private IEnumerator ScanRadiusMonsters()
+    {
+        while (true)
+        {
+            UpdateRadiusMonsters();
+            yield return CoroutineManager.WaitForSeconds(0.2f);
         }
     }
 }

@@ -12,18 +12,16 @@ public abstract class State<TState> where TState : struct, Enum
 
     public virtual void Enter()
     {
-
     }
 
     public virtual void Execute()
     {
-
     }
 
     public virtual void Exit()
     {
-
     }
+
 }
 
 public class StateDefault<TState> : State<TState> where TState : struct, Enum

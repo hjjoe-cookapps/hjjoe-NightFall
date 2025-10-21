@@ -1,24 +1,29 @@
 ﻿using _Project.Scripts.Utils;
+using UnityEngine;
 
-public class PlayerStateIdle : State<PlayerState>
+public class PlayerStateIdle : PlayerStateBase
 {
-    public PlayerStateIdle(StateMachine<PlayerState> stateMachine) : base(stateMachine)
+    public PlayerStateIdle(StateMachine<PlayerState> stateMachine, PlayerBehaviour context) : base(stateMachine, context)
     {
     }
 
-    public virtual void Enter()
+    public override void Execute()
     {
-
+        UpdateState();
     }
 
-    public virtual void Execute()
+    private void UpdateState()
     {
-
+        if (_context.InRadiusMonsters.Count > 0)
+        {
+            if (_context.IsSkillActive)
+            {
+                _context.StateMachine.ChangeState(PlayerState.Skill);
+            }
+            else
+            {
+                _context.StateMachine.ChangeState(PlayerState.Attack);
+            }
+        }
     }
-
-    public virtual void Exit()
-    {
-
-    }
-
 }
