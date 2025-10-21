@@ -5,8 +5,7 @@ public static class IEnumerators
 {
     public static IEnumerator WaitForDurationAndAction(float duration, Action action)
     {
-        yield return new WaitForSeconds(duration);
+        yield return CoroutineManager.WaitForSeconds(duration);
         action?.Invoke();
-        yield break;
     }
 }
