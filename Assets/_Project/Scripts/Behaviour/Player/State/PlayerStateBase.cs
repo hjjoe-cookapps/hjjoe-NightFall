@@ -1,4 +1,4 @@
-﻿using _Project.Scripts.Utils;
+﻿using _Project.Scripts.Defines;
 
 public abstract class PlayerStateBase : State<PlayerState>
 {
@@ -8,6 +8,5 @@ public abstract class PlayerStateBase : State<PlayerState>
     {
         _context = context;
     }
-
 }
 

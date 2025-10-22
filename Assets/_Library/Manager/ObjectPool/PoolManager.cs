@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class PoolManager : SingletonBehaviour<PoolManager>
 {
-    private readonly Dictionary<string, Pool> poolDict = new Dictionary<string, Pool>();
+    private readonly Dictionary<string, Pool> _poolDict = new();
 
-    private Transform rootTransform;
+    private Transform _rootTransform;
 
     public void Enqueue(PoolMonoBehaviour obj)
     {
-        if (obj != null && !poolDict.ContainsKey(obj.name))
+        if (obj != null && !_poolDict.ContainsKey(obj.name))
         {
             Object.Destroy(obj.gameObject);
             return;
         }
 
-        poolDict[obj.name].Enqueue(obj);
+        _poolDict[obj.name].Enqueue(obj);
     }
 
     public PoolMonoBehaviour Dequeue(GameObject original, Transform transform = null)
@@ -25,12 +25,12 @@ public class PoolManager : SingletonBehaviour<PoolManager>
             return null;
         }
 
-        if (!poolDict.ContainsKey(original.name))
+        if (!_poolDict.ContainsKey(original.name))
         {
             CreatePool(original);
         }
 
-        return poolDict[original.name].Dequeue(transform);
+        return _poolDict[original.name].Dequeue(transform);
     }
 
     public PoolMonoBehaviour Dequeue(GameObject original, Vector3 position)
@@ -40,43 +40,43 @@ public class PoolManager : SingletonBehaviour<PoolManager>
             return null;
         }
 
-        if (!poolDict.ContainsKey(original.name))
+        if (!_poolDict.ContainsKey(original.name))
         {
             CreatePool(original);
         }
 
-        return poolDict[original.name].Dequeue(position);
+        return _poolDict[original.name].Dequeue(position);
     }
 
     public GameObject GetOriginal(string name)
     {
-        if (!poolDict.ContainsKey(name))
+        if (!_poolDict.ContainsKey(name))
         {
             return null;
         }
 
-        return poolDict[name].Original;
+        return _poolDict[name].Original;
     }
 
     public void Clear()
     {
-        foreach (var pool in poolDict.Values)
+        foreach (var pool in _poolDict.Values)
         {
             pool.Clear();
         }
-        poolDict.Clear();
+        _poolDict.Clear();
     }
 
     private void CreatePool(GameObject original)
     {
-        if (original != null && !poolDict.ContainsKey(original.name))
+        if (original != null && !_poolDict.ContainsKey(original.name))
         {
             int count = original.GetOrAddComponent<PoolMonoBehaviour>().PoolCreateCount;
 
             Pool pool = new Pool();
             pool.Init(original, count);
-            pool.Root.parent = rootTransform;
-            poolDict[original.name] = pool;
+            pool.Root.parent = _rootTransform;
+            _poolDict[original.name] = pool;
         }
     }
 }

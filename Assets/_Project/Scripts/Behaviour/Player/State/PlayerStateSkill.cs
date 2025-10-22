@@ -1,11 +1,11 @@
 ﻿using System.Collections;
-using System.Linq;
-using _Project.Scripts.Utils;
+using _Project.Scripts.Defines;
 using UnityEngine;
 
 public class PlayerStateSkill : PlayerStateBase
 {
     private Coroutine _coroutine;
+
     public PlayerStateSkill(StateMachine<PlayerState> stateMachine, PlayerBehaviour context) : base(stateMachine, context)
     {
     }
@@ -23,6 +23,10 @@ public class PlayerStateSkill : PlayerStateBase
 
     public override void Exit()
     {
+        _context.Character.Animator.Play("IdleMelee");
+        _context.Character.Animator.ResetTrigger("Slash");
+        _context.Character.Animator.SetBool("Action", false);
+
         _context.StopCoroutine(_coroutine);
     }
 
@@ -43,17 +47,7 @@ public class PlayerStateSkill : PlayerStateBase
         while (true)
         {
             yield return CoroutineManager.WaitForSeconds(_context.Cooltime);
-            Skill();
+            _context.Character.Slash();
         }
     }
-
-    private void Skill()
-    {
-        _context.InRadiusMonsters.Take(_context.TargetCount).ToList();
-
-        //Todo: instantiate Effects;
-        // Set AttackMotion;
-
-    }
-
 }

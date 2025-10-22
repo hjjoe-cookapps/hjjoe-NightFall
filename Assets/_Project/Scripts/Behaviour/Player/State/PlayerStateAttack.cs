@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Linq;
-using _Project.Scripts.Utils;
+using _Project.Scripts.Defines;
 using UnityEngine;
 
 public class PlayerStateAttack : PlayerStateBase
 {
     private Coroutine _coroutine;
+
     public PlayerStateAttack(StateMachine<PlayerState> stateMachine, PlayerBehaviour context) : base(stateMachine, context)
     {
     }
@@ -22,6 +23,11 @@ public class PlayerStateAttack : PlayerStateBase
 
     public override void Exit()
     {
+        // exit current animation
+        _context.Character.Animator.Play("IdleMelee");
+        _context.Character.Animator.ResetTrigger("Jab");
+        _context.Character.Animator.SetBool("Action", false);
+
         _context.StopCoroutine(_coroutine);
     }
 
@@ -41,19 +47,8 @@ public class PlayerStateAttack : PlayerStateBase
     {
         while (true)
         {
+            _context.Character.Jab();
             yield return CoroutineManager.WaitForSeconds(_context.Cooltime);
-            Attack();
         }
     }
-
-    private void Attack()
-    {
-        _context.InRadiusMonsters.Take(_context.TargetCount).ToList();
-
-        //Todo: instantiate Effects;
-        // Set AttackMotion;
-
-    }
-
-
 }

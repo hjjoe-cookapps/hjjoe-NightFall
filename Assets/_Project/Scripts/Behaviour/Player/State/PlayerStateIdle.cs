@@ -1,4 +1,4 @@
-﻿using _Project.Scripts.Utils;
+﻿using _Project.Scripts.Defines;
 using UnityEngine;
 
 public class PlayerStateIdle : PlayerStateBase
