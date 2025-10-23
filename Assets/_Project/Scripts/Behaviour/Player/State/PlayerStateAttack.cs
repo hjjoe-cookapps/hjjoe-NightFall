@@ -48,7 +48,7 @@ public class PlayerStateAttack : PlayerStateBase
         while (true)
         {
             _context.Character.Jab();
-            yield return CoroutineManager.WaitForSeconds(_context.Cooltime);
+            yield return CoroutineManager.WaitForSeconds(_context.WaitTime);
         }
     }
 }

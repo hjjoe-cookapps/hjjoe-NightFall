@@ -46,8 +46,8 @@ public class PlayerStateSkill : PlayerStateBase
     {
         while (true)
         {
-            yield return CoroutineManager.WaitForSeconds(_context.Cooltime);
             _context.Character.Slash();
+            yield return CoroutineManager.WaitForSeconds(_context.WaitTime);
         }
     }
 }

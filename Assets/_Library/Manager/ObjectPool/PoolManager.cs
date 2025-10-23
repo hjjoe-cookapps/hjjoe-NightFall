@@ -5,8 +5,6 @@ public class PoolManager : SingletonBehaviour<PoolManager>
 {
     private readonly Dictionary<string, Pool> _poolDict = new();
 
-    private Transform _rootTransform;
-
     public void Enqueue(PoolMonoBehaviour obj)
     {
         if (obj != null && !_poolDict.ContainsKey(obj.name))
@@ -75,7 +73,7 @@ public class PoolManager : SingletonBehaviour<PoolManager>
 
             Pool pool = new Pool();
             pool.Init(original, count);
-            pool.Root.parent = _rootTransform;
+            pool.Root.SetParent(gameObject.transform, false);
             _poolDict[original.name] = pool;
         }
     }

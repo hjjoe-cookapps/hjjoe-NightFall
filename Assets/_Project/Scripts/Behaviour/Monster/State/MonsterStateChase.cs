@@ -62,6 +62,7 @@ public class MonsterStateChase : MonsterStateBase
             if (_context.ChaseTarget != null)
             {
                 _context.Agent.SetDestination(_context.ChaseTarget.transform.position);
+                _context.Rotation();
             }
             yield return CoroutineManager.WaitForSeconds(0.2f);
         }

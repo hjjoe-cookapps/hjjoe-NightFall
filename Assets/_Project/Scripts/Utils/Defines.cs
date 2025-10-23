@@ -2,12 +2,11 @@
 
 namespace _Project.Scripts.Defines
 {
-    public enum AttackType
+    public enum Direction
     {
-        Melee,
-        Ranged
+        Left,
+        Right
     }
-
 
     public enum PlayerState
     {
@@ -24,10 +23,40 @@ namespace _Project.Scripts.Defines
         Dead
     }
 
+    public enum BuildingState
+    {
+        Wait,   // 낮에
+        Idle,   // 밤에
+        Crash
+    }
+
+    public enum AttackType
+    {
+        Melee,
+        Ranged
+    }
+
+    public enum BulidingType
+    {
+        Castle,
+        Tower,
+        Wall,
+        Barracks,
+        House,
+        Farm,
+        Field
+    }
+
+    public enum UnitType
+    {
+
+    }
     public static class Defines
     {
         public static readonly LayerMask FriendLayer = LayerMask.GetMask("Player", "Building", "Unit");
         public static readonly LayerMask MonsterLayer = LayerMask.GetMask("Monster");
+
+        public static readonly float HitRange = 2f;
 
         public static class Player
         {

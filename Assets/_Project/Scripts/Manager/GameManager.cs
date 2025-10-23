@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : SingletonBehaviour<GameManager>
@@ -11,6 +10,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     private GameObject _player;
 
     private HashSet<MonsterBehaviour> _monsters;
+
+    private HashSet<BuildingBehaviour> _buildings;
     private int _waveCount;
 
     private int _coin = 10; // TODO : 10 지우기

@@ -34,7 +34,7 @@ public class Pool
         }
 
         PoolMonoBehaviour.gameObject.SetActive(false);
-        PoolMonoBehaviour.transform.SetParent(Root);
+        PoolMonoBehaviour.transform.SetParent(Root, false);
 
 
         if (!_poolQueue.Contains(PoolMonoBehaviour))
@@ -55,7 +55,7 @@ public class Pool
             poolMonoBehaviour = Create();
         }
 
-        poolMonoBehaviour.transform.parent = transform;
+        poolMonoBehaviour.transform.SetParent(transform, false);
         if (transform == null)
         {
             SceneManager.MoveGameObjectToScene(poolMonoBehaviour.gameObject, SceneManager.GetActiveScene());
@@ -72,7 +72,7 @@ public class Pool
         if (_poolQueue.Count > 0)
         {
             poolMonoBehaviour = _poolQueue.Dequeue();
-            poolMonoBehaviour.transform.parent = null;
+            poolMonoBehaviour.transform.SetParent(null, false);
             SceneManager.MoveGameObjectToScene(poolMonoBehaviour.gameObject, SceneManager.GetActiveScene());
             poolMonoBehaviour.transform.position = position;
         }

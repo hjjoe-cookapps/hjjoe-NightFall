@@ -20,24 +20,25 @@ public struct CharacterStatus
     public AttackType AttackType;
     public bool IsAttackSplash;
     public int AttackDamage;
-    public int AttackCooltime;
+    public int AttackWaitTime;  // 공격 대기시간
     public int AttackRange;
     public int AttackTargetCount;
 
     public bool IsSkillSplash;
     public int SkillDamage;
-    public int SkillCooltime;
+    public int SkillWaitTime;   // 스킬 시전중 공격 대기시간
     public int SkillRange;
     public int SkillSpeed;    // 스킬 애니메이션에 대해서 배속으로 제어할 것
     public int SkillTargetCount;
     public int SkillTime;   // skill 시전 시간
+    public int SkillCooltime;// skill 쿨타임
 
     public string CharacterPrefab;
     public string AttackPrefab;
     public string SkillPrefab;
 };
 
-public class PlayerBehaviour : MonoBehaviour
+public class PlayerBehaviour : MonoBehaviour, IAttackAction
 {
     [SerializeField]
     private Character _character;
@@ -68,7 +69,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     public bool IsSplash => isSkillActive ? _status.IsSkillSplash : _status.IsAttackSplash;
     public int Damage => isSkillActive ? _status.SkillDamage : _status.AttackDamage;
-    public int Cooltime => isSkillActive ? _status.SkillCooltime : _status.AttackCooltime;
+    public int WaitTime => isSkillActive ? _status.SkillWaitTime : _status.AttackWaitTime;
     public int Range => isSkillActive ? _status.SkillRange : _status.AttackRange;
     public int TargetCount => isSkillActive ? _status.SkillTargetCount : _status.AttackTargetCount;
     public List<MonsterBehaviour> InRadiusMonsters => _inRadiusMonsters;
@@ -76,11 +77,13 @@ public class PlayerBehaviour : MonoBehaviour
 
     #endregion
 
+    #region event
     private void Awake()
     {
         _character = _character == null ? GetComponent<Character>() : _character;
         _rigidbody = _rigidbody == null ? GetComponent<Rigidbody>() : _rigidbody;
         _animationEvents = _animationEvents == null ? GetComponentInChildren<AnimationEvents>() : _animationEvents;
+
         _stateMachine.RegisterState<PlayerStateIdle>(PlayerState.Idle, this);
         _stateMachine.RegisterState<PlayerStateAttack>(PlayerState.Attack, this);
         _stateMachine.RegisterState<PlayerStateSkill>(PlayerState.Skill, this);
@@ -92,6 +95,7 @@ public class PlayerBehaviour : MonoBehaviour
         // _status = ***
 
         _initialRotation = transform.rotation;
+
         _stateMachine.ChangeState(PlayerState.Idle);
 
         _scanRadiusMonsterCoroutine = StartCoroutine(ScanRadiusMonsters());
@@ -119,47 +123,7 @@ public class PlayerBehaviour : MonoBehaviour
     }
     */
 
-    public void OnMove(InputValue value)
-    {
-        Vector2 input = value.Get<Vector2>();
-
-        if (input.sqrMagnitude > 0.01f) // sqrMagnitude는 magnitude보다 성능이 좋음
-        {
-            _moveInput = new Vector3(input.x, 0f, input.y);
-            _character.SetState(CharacterState.Walk);
-        }
-        else
-        {
-            _moveInput = Vector3.zero;
-            _character.SetState(CharacterState.Idle);
-        }
-    }
-
-    //Todo : OnAttack 안쓸꺼니까 지울 것
-    public void OnAttack(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            _stateMachine.ChangeState(PlayerState.Attack);
-            _character.Slash();
-            if (_character.Animator.GetBool("Action") == true)
-            {
-                _character.Animator.Play("IdleMelee");
-                _character.Animator.ResetTrigger("Slash");
-                _character.Animator.SetBool("Action", false);
-            }
-        }
-    }
-
-    public void OnSkill(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            isSkillActive = true;
-        }
-
-        StartCoroutine(UpdateSkillTime());
-    }
+    #endregion
 
     private void FixedMove()
     {
@@ -214,6 +178,7 @@ public class PlayerBehaviour : MonoBehaviour
         // UI와 시간 동기화 필요
         yield return CoroutineManager.WaitForSeconds(_status.SkillTime);
         isSkillActive = false;
+        Debug.Log("Skill End");
     }
 
     private void UpdateRadiusMonsters()
@@ -243,39 +208,107 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    // 1. 근거리
-    // 2. 원거리
-
-
-    public void Attack(string str)
+    public void OnMove(InputValue value)
     {
+        Vector2 input = value.Get<Vector2>();
 
-        if (isSkillActive)
+        if (input.sqrMagnitude > 0.01f) // sqrMagnitude는 magnitude보다 성능이 좋음
         {
-            ActiveSkill();
+            _moveInput = new Vector3(input.x, 0f, input.y);
+            _character.SetState(CharacterState.Walk);
         }
         else
         {
-            ActiveAttack();
+            _moveInput = Vector3.zero;
+            _character.SetState(CharacterState.Idle);
         }
-
-        //Todo: instantiate Effects;
-        // Set AttackMotion;
     }
 
-    private void ActiveAttack() // 캐릭 다양화 할 때 상속으로 처리하기?
+    public void OnSkill(InputValue value)
     {
-        Debug.Log("Attack");
-        List<MonsterBehaviour> targets = _inRadiusMonsters.Take(TargetCount).ToList();
+        if (value.isPressed)
+        {
+            if (!isSkillActive)
+            {
+                isSkillActive = true;
+                StartCoroutine(UpdateSkillTime());
+                Debug.Log("Skill start");
+            }
+        }
+    }
+
+    public void Attack(string str)
+    {
+        HashSet<MonsterBehaviour> targets = _inRadiusMonsters.Take(TargetCount).ToHashSet();
+        if (IsSplash)
+        {
+            HashSet<MonsterBehaviour> newTargets = new HashSet<MonsterBehaviour>(targets);
+            foreach (MonsterBehaviour monster in targets)
+            {
+                Collider[] hitColliders = Physics.OverlapSphere(monster.transform.position, Defines.HitRange, Defines.MonsterLayer);
+
+                foreach (Collider col in hitColliders)
+                {
+                    if (col.gameObject.TryGetComponent(out MonsterBehaviour monsterBehaviour))
+                    {
+                        newTargets.Add(monsterBehaviour);
+                    }
+                }
+            }
+
+            targets = newTargets;
+
+        }
+
+        if (isSkillActive)
+        {
+            SkillAction(targets);
+        }
+        else
+        {
+            AttackAction(targets);
+        }
+    }
+
+    #region IAttackAction
+    public void AttackAction(HashSet<MonsterBehaviour> targets)
+    {
+        // TODO : 구현 옮기기
+        foreach (MonsterBehaviour monster in targets)
+        {
+            monster.OnAttacked(gameObject);
+            ParticleEffectBehaviour effect = ResourceManager.Instance.Instantiate("Effect/Slash_Straight_11_BW", monster.BodyTransform).GetComponent<ParticleEffectBehaviour>();
+
+            if (transform.rotation.y == 0)
+            {
+                effect.SetDirection(Direction.Right);
+            }
+            else
+            {
+                effect.SetDirection(Direction.Left);
+            }
+        }
+    }
+
+    public void SkillAction(HashSet<MonsterBehaviour> targets)
+    {
+        Debug.Log("Skill");
 
         foreach (MonsterBehaviour monster in targets)
         {
             monster.OnAttacked(gameObject);
-        }
-    }
+            ParticleEffectBehaviour effect = ResourceManager.Instance.Instantiate("Effect/Slash_Circle_04_BW", monster.BodyTransform).GetComponent<ParticleEffectBehaviour>();
 
-    private void ActiveSkill()
-    {
-        Debug.Log("Skill");
+            if (transform.rotation.y == 0)
+            {
+                effect.SetDirection(Direction.Right);
+            }
+            else
+            {
+                effect.SetDirection(Direction.Left);
+            }
+        }
+
     }
+    #endregion
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using _Project.Scripts.Defines;
-using UnityEngine;
+﻿using _Project.Scripts.Defines;
 
 public class MonsterStateWalk : MonsterStateBase
 {
@@ -12,6 +10,7 @@ public class MonsterStateWalk : MonsterStateBase
     {
         _context.Animator.SetInteger("State", MonsterBehaviour.MoveAnimIndex);
         _context.Agent.SetDestination(_context.MainTarget.transform.position);
+        _context.Rotation();
     }
 
     public override void Execute()
@@ -22,7 +21,6 @@ public class MonsterStateWalk : MonsterStateBase
     public override void Exit()
     {
         _context.Animator.SetInteger("State", MonsterBehaviour.IdleAnimIndex);
-
     }
 
     private void UpdateState()

@@ -10,6 +10,5 @@ public class PoolMonoBehaviour : MonoBehaviour
 
     public virtual void PoolRelease()
     {
-
     }
 }

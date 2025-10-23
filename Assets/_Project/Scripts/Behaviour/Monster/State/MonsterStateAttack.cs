@@ -46,6 +46,7 @@ public class MonsterStateAttack : MonsterStateBase
         while (true)
         {
             _context.Animator.SetTrigger("Attack");
+            _context.Rotation();
             yield return CoroutineManager.WaitForSeconds(_context.Status.Cooltime);
         }
     }

@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _Project.Scripts.Defines;
+using Assets.FantasyMonsters.Common.Scripts;
 using UnityEngine;
 using UnityEngine.AI;
+using MonsterState = _Project.Scripts.Defines.MonsterState;
 
 [Serializable]
 public struct MonsterStatus
@@ -28,9 +30,17 @@ public class MonsterBehaviour : MonoBehaviour
     private NavMeshAgent _agent;
     [SerializeField]
     private Animator _animator;
+    [SerializeField]
+    private Monster _externMonsterScript;   // 외부 에셋의 스크립트
+    [SerializeField]
+    private Transform _bodyTransform;
+
+
     //Todo: SerializedField 삭제할것, 테스트 용임
     [SerializeField]
     private MonsterStatus _status;
+
+    private Quaternion _initialRotation;
 
     private GameObject _mainTarget;
     private GameObject _inRangeTarget;
@@ -41,11 +51,14 @@ public class MonsterBehaviour : MonoBehaviour
 
     private readonly StateMachine<MonsterState> _stateMachine = new();
 
-    #region property
 
+
+    #region property
     public NavMeshAgent Agent => _agent;
     public Animator Animator => _animator;
+    public Monster ExternMonsterScript => _externMonsterScript;
     public MonsterStatus Status => _status;
+    public Transform BodyTransform => _bodyTransform;
     public GameObject MainTarget => _mainTarget;
     public GameObject InRangeTarget
     {
@@ -58,14 +71,18 @@ public class MonsterBehaviour : MonoBehaviour
 
     #endregion
 
-    #region Event
-
+    #region event
     private void Awake()
     {
         if (_agent == null)
         {
             _agent = GetComponent<NavMeshAgent>();
         }
+
+        _agent = _agent == null ? GetComponent<NavMeshAgent>() : _agent;
+        _animator = _animator == null ? GetComponent<Animator>() : _animator;
+        _externMonsterScript = _externMonsterScript == null ? GetComponent<Monster>() : _externMonsterScript;
+        _bodyTransform = _bodyTransform == null ? transform.Find("Body")?.GetComponent<Transform>() : _bodyTransform;
 
         _stateMachine.RegisterState<MonsterStateWalk>(MonsterState.Walk, this);
         _stateMachine.RegisterState<MonsterStateChase>(MonsterState.Chase, this);
@@ -80,6 +97,13 @@ public class MonsterBehaviour : MonoBehaviour
         _stateMachine.ChangeState(MonsterState.Walk);
     }
 
+    private void Start()
+    {
+        _initialRotation = transform.rotation;
+
+        _externMonsterScript.OnEvent -= Attack;
+    }
+
     private void Update()
     {
         UpdateRadiusTargets();
@@ -90,6 +114,47 @@ public class MonsterBehaviour : MonoBehaviour
     }
 
     #endregion
+
+    public void Rotation()
+    {
+        Quaternion rotation = Quaternion.identity;
+
+        switch (_stateMachine.CurStateType)
+        {
+            case MonsterState.Walk:
+            case MonsterState.Chase:
+                rotation = (_agent.destination.x < transform.position.x) ? Defines.Monster.LeftRotation : Defines.Monster.RightRotation;
+                break;
+            case MonsterState.Attack:
+                if (_inRangeTarget != null)
+                {
+                    rotation = (_inRangeTarget.transform.position.x < transform.position.x) ? Defines.Monster.LeftRotation : Defines.Monster.RightRotation;
+                }
+                else
+                {
+                    return;
+                }
+                break;
+            case MonsterState.Dead:
+                return;
+        }
+
+        transform.rotation = _initialRotation * rotation;
+    }
+
+    public void Attack(string str)
+    {
+        // 애니메이터에 의해 공격 애니메이션 중 발생하는 함수
+        if (_inRangeTarget == null || !_inRangeTarget.activeSelf)
+        {
+            return;
+        }
+
+        if ((transform.position - _inRangeTarget.transform.position).magnitude < _status.Range)
+        {
+            // 공격 처리
+        }
+    }
 
     public void OnAttacked(GameObject target)
     {
@@ -171,4 +236,5 @@ public class MonsterBehaviour : MonoBehaviour
         _chaseTarget = null;
         StopCoroutine(_chaseCoroutine);
     }
+
 }

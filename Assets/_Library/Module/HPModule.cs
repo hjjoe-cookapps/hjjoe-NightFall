@@ -8,13 +8,9 @@ public class HPModule
     public float HP => hp;
     public float MaxHP => maxhp;
 
-    private event Action onDamageEvent;
-    private event Action onHealEvent;
-    private event Action onDeadEvent;
-
-    public Action OnDamageEvent => onDamageEvent;
-    public Action OnHealEvent => onHealEvent;
-    public Action OnDeadEvent => onDeadEvent;
+    public event Action OnDamageEvent;
+    public event Action OnHealEvent;
+    public event Action OnDeadEvent;
 
 
     public void ChangeHP(float hp)
@@ -40,14 +36,14 @@ public class HPModule
     {
         hp += heal;
         hp = Math.Min(hp, maxhp);
-        onHealEvent?.Invoke();
+        OnHealEvent?.Invoke();
     }
 
     private void SetDamage(float damage)
     {
         hp -= damage;
         hp = Math.Max(hp, 0);
-        onDamageEvent?.Invoke();
+        OnDamageEvent?.Invoke();
 
         if (hp <= 0)
         {
@@ -56,8 +52,8 @@ public class HPModule
 
     }
 
-    public void OnDead()
+    private void OnDead()
     {
-        onDeadEvent?.Invoke();
+        OnDeadEvent?.Invoke();
     }
 }
