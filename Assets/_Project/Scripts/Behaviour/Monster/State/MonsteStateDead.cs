@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Defines;
+using UnityEngine;
 
 public class MonsterStateDead : MonsterStateBase
 {
@@ -8,12 +9,22 @@ public class MonsterStateDead : MonsterStateBase
 
     public override void Enter()
     {
+        Debug.Log("Dead");
         _context.Agent.ResetPath();
-        _context.Animator.Play("Death");
+        _context.Animator.ResetTrigger("Attack");
+        _context.Animator.SetBool("Action", false);
+        _context.Animator.Play("Idle");
+        _context.Animator.SetInteger("State", MonsterBehaviour.DeathAnimIndex);
+
     }
 
     public override void Execute()
     {
+        var state = _context.Animator.GetCurrentAnimatorStateInfo(0);
+        if (state.IsName("Death") && state.normalizedTime >= 1.0f)
+        {
+            ResourceManager.Instance.Destroy(_context.gameObject);
+        }
         // 애니메이션 종료시 사망 처리
     }
 

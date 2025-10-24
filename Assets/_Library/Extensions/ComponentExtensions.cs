@@ -10,6 +10,16 @@ public static class ComponentExtensions
 
         return component;
     }
+
+    public static GameObject GetRoot(this GameObject obj)
+    {
+        return obj.transform.root.gameObject;
+    }
+
+    public static GameObject GetParent(this GameObject obj)
+    {
+        return obj.transform.parent.gameObject != null ?  obj.transform.parent.gameObject : obj;
+    }
 }
 
 

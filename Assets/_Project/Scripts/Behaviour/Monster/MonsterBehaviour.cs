@@ -13,7 +13,7 @@ public struct MonsterStatus
 {
     public string Name;
 
-    public int Hp;
+    public int HP;
     public int MoveSpeed;
 
     public int Damage;
@@ -25,6 +25,7 @@ public class MonsterBehaviour : MonoBehaviour
 {
     public static readonly int IdleAnimIndex = 0;
     public static readonly int MoveAnimIndex = 2;
+    public static readonly int DeathAnimIndex = 9;
 
     [SerializeField]
     private NavMeshAgent _agent;
@@ -34,7 +35,8 @@ public class MonsterBehaviour : MonoBehaviour
     private Monster _externMonsterScript;   // 외부 에셋의 스크립트
     [SerializeField]
     private Transform _bodyTransform;
-
+    [SerializeField]
+    private HPModule _hpModule;
 
     //Todo: SerializedField 삭제할것, 테스트 용임
     [SerializeField]
@@ -51,21 +53,19 @@ public class MonsterBehaviour : MonoBehaviour
 
     private readonly StateMachine<MonsterState> _stateMachine = new();
 
-
-
     #region property
     public NavMeshAgent Agent => _agent;
     public Animator Animator => _animator;
     public Monster ExternMonsterScript => _externMonsterScript;
-    public MonsterStatus Status => _status;
     public Transform BodyTransform => _bodyTransform;
+    public HPModule  HPModule => _hpModule;
+    public MonsterStatus Status => _status;
     public GameObject MainTarget => _mainTarget;
     public GameObject InRangeTarget
     {
         get => _inRangeTarget;
         set => _inRangeTarget = value;
     }
-
     public GameObject ChaseTarget => _chaseTarget;
     public StateMachine<MonsterState> StateMachine => _stateMachine;
 
@@ -83,6 +83,7 @@ public class MonsterBehaviour : MonoBehaviour
         _animator = _animator == null ? GetComponent<Animator>() : _animator;
         _externMonsterScript = _externMonsterScript == null ? GetComponent<Monster>() : _externMonsterScript;
         _bodyTransform = _bodyTransform == null ? transform.Find("Body")?.GetComponent<Transform>() : _bodyTransform;
+        _hpModule = _hpModule == null ? GetComponent<HPModule>() : _hpModule;
 
         _stateMachine.RegisterState<MonsterStateWalk>(MonsterState.Walk, this);
         _stateMachine.RegisterState<MonsterStateChase>(MonsterState.Chase, this);
@@ -92,9 +93,12 @@ public class MonsterBehaviour : MonoBehaviour
 
     private void OnEnable()
     {
+        _hpModule.Init(_status.HP);
+
         _mainTarget = GameManager.Instance.Castle;
         _inRangeTarget = null;
         _stateMachine.ChangeState(MonsterState.Walk);
+
     }
 
     private void Start()
@@ -102,6 +106,13 @@ public class MonsterBehaviour : MonoBehaviour
         _initialRotation = transform.rotation;
 
         _externMonsterScript.OnEvent -= Attack;
+        _externMonsterScript.OnEvent += Attack;
+
+        _hpModule.OnDamageEventOpponent -= OnDamaged;
+        _hpModule.OnDamageEventOpponent += OnDamaged;
+
+        _hpModule.OnDeadEvent -= OnDead;
+        _hpModule.OnDeadEvent += OnDead;
     }
 
     private void Update()
@@ -150,13 +161,23 @@ public class MonsterBehaviour : MonoBehaviour
             return;
         }
 
-        if ((transform.position - _inRangeTarget.transform.position).magnitude < _status.Range)
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _status.Range, Defines.FriendLayer);
+
+        foreach (Collider col in hitColliders)
         {
-            // 공격 처리
+            if (col.gameObject == _inRangeTarget)
+            {
+                _inRangeTarget.GetRoot().GetComponent<HPModule>()?.TakeDamage(_status.Damage, gameObject);
+            }
         }
     }
 
-    public void OnAttacked(GameObject target)
+    public void OnDead()
+    {
+        _stateMachine.ChangeState(MonsterState.Dead);
+    }
+
+    public void OnDamaged(GameObject target)
     {
 
         // 공격 당한 경우, 공격 당한 상태가 아닐 경우 상대방을 추적대상으로 선정

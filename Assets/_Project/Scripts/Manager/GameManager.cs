@@ -9,7 +9,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField]
     private GameObject _player;
 
-    private HashSet<MonsterBehaviour> _monsters;
+    private HashSet<GameObject> _monsters;  // 필요한가?
 
     private HashSet<BuildingBehaviour> _buildings;
     private int _waveCount;
@@ -27,13 +27,9 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
     }
 
-    private void OnMonsterDestroyAction(MonsterBehaviour monster)
+    public void OnMonsterDestroyAction()
     {
-        if (_monsters.Remove(monster))
-        {
-            --_waveCount;
-        }
+        --_waveCount;
+
     }
-
-
 }

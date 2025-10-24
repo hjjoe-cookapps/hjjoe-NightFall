@@ -1,55 +1,58 @@
 ﻿using System;
+using UnityEngine;
 
-public class HPModule
+public class HPModule : MonoBehaviour
 {
-    private float hp;
-    private float maxhp;
+    private int _hp;
+    private int _maxhp;
 
-    public float HP => hp;
-    public float MaxHP => maxhp;
+    public int HP => _hp;
+    public int MaxHP => _maxhp;
 
-    public event Action OnDamageEvent;
-    public event Action OnHealEvent;
+    // 수치 관련 UI 처리용
+    public event Action<int> OnDamageEventNumber;
+    public event Action<int> OnHealEventNumber;
+
+    // 객체 동작 처리용
+    public event Action<GameObject> OnDamageEventOpponent;
+    public event Action<GameObject> OnHealEventOpponent;
     public event Action OnDeadEvent;
 
-
-    public void ChangeHP(float hp)
+    // Setup HP
+    public void Init(int hp)
     {
-        this.hp = hp;
-        this.hp = Math.Min(this.hp, maxhp);
-        this.hp = Math.Max(this.hp, 0);
+        _maxhp = hp;
+        _hp = hp;
     }
 
-    public void ApplyHealthChange(float number)
+    public void SetHP(int hp)
     {
-        if (number > 0)
-        {
-            SetHeal(number);
-        }
-        else
-        {
-            SetDamage(number);
-        }
+        _hp = Math.Clamp(hp, 0, _maxhp);
     }
 
-    private void SetHeal(float heal)
+    public void Heal(int heal, GameObject obj)
     {
-        hp += heal;
-        hp = Math.Min(hp, maxhp);
-        OnHealEvent?.Invoke();
+        _hp += heal;
+        _hp = Math.Clamp(_hp, 0, _maxhp);
+        OnHealEventNumber?.Invoke(heal);
+        OnHealEventOpponent?.Invoke(obj);
     }
 
-    private void SetDamage(float damage)
+    public void TakeDamage(int damage, GameObject obj)
     {
-        hp -= damage;
-        hp = Math.Max(hp, 0);
-        OnDamageEvent?.Invoke();
+        _hp -= damage;
+        _hp = Math.Clamp(_hp, 0, _maxhp);
 
-        if (hp <= 0)
+        OnDamageEventNumber?.Invoke(damage);
+
+        if (_hp <= 0)
         {
             OnDead();
         }
-
+        else
+        {
+            OnDamageEventOpponent?.Invoke(obj);
+        }
     }
 
     private void OnDead()

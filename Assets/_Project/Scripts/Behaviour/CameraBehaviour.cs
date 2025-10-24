@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CameraBehaviour : MonoBehaviour
 {
-    private static readonly Vector3 _positionBias = new Vector3(0, 15, -15);
+    private static readonly Vector3 _positionBias = new Vector3(0, 20, -7.5f);
 
     [SerializeField]
     private GameObject _player;

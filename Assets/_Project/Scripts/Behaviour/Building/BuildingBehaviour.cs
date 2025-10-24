@@ -63,11 +63,15 @@ public abstract class BuildingBehaviour : MonoBehaviour
 
     // 1. 기본 스프라이트
     // 2. 파괴 상태 스프라이트
-
     // 밤에 비활성화 할 스픝라이트 모음
     // 3. 업그레이드 UI sprite -> 최종 인 경우에는 없어도 됨
 
-
+    [SerializeField]
+    private GameObject _default;
+    [SerializeField]
+    private GameObject _destroyed;
+    [SerializeField]
+    private GameObject _buildUI;
 
     #region property
 
@@ -84,9 +88,10 @@ public abstract class BuildingBehaviour : MonoBehaviour
     #region event
     private void Awake()
     {
+        _hpModule = _hpModule == null ?  GetComponent<HPModule>() : _hpModule;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         _hpModule.OnDeadEvent -= OnDestroy;
         _hpModule.OnDeadEvent += OnDestroy;
@@ -104,6 +109,11 @@ public abstract class BuildingBehaviour : MonoBehaviour
     public virtual void StartBattle()   // 전투 시작시 동작
     {
         _state = BuildingState.Idle;
+        _hpModule.Init(_buildingStatus.HP);
+
+        _default?.SetActive(true);
+        _destroyed?.SetActive(false);
+        _buildUI?.SetActive(false);
     }
 
     // Idle에서의 동작
@@ -111,16 +121,23 @@ public abstract class BuildingBehaviour : MonoBehaviour
     {
     }
 
-
     protected virtual void Regenerate() // 웨이브 종료시 호출
     {
         _state = BuildingState.Wait;
-        // status 초기화
+        _hpModule = _hpModule == null ?  GetComponent<HPModule>() : _hpModule;
+
+        _default?.SetActive(true);
+        _destroyed?.SetActive(false);
+        _buildUI?.SetActive(true);
+
+        // 체력 초기화?
     }
     protected virtual void OnDestroy()
     {
         _state = BuildingState.Crash;
         // 충돌체 끄기
+        _default?.SetActive(false);
+        _destroyed?.SetActive(true);
     }
 }
 

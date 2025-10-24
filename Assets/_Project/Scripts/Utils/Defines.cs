@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.ComponentModel;
+using UnityEngine;
 
 namespace _Project.Scripts.Defines
 {
@@ -34,6 +35,14 @@ namespace _Project.Scripts.Defines
     {
         Melee,
         Ranged
+    }
+
+    public enum MonsterType
+    {
+        Melee,
+        Ranged,
+        [Description("Maneater")]Maneater,
+        Sky
     }
 
     public enum BulidingType

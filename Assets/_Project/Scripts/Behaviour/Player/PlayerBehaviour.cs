@@ -13,7 +13,7 @@ public struct CharacterStatus
 {
     public string Name;
 
-    public int Hp;
+    public int HP;
     public int MoveSpeed;
     public int RegenerationTime;
 
@@ -46,7 +46,8 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     private Rigidbody _rigidbody;
     [SerializeField]
     private AnimationEvents _animationEvents;
-
+    [SerializeField]
+    private HPModule _hpModule;
 
     [SerializeField]
     private CharacterStatus _status; // Todo:remove
@@ -63,7 +64,7 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
 
     #region property
     public Character Character => _character;
-
+    public HPModule HPModule => _hpModule;
     public CharacterStatus CharacterStatus => _status;
     public bool IsSkillActive => isSkillActive;
 
@@ -83,6 +84,7 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         _character = _character == null ? GetComponent<Character>() : _character;
         _rigidbody = _rigidbody == null ? GetComponent<Rigidbody>() : _rigidbody;
         _animationEvents = _animationEvents == null ? GetComponentInChildren<AnimationEvents>() : _animationEvents;
+        _hpModule = _hpModule == null ? GetComponent<HPModule>() : _hpModule;
 
         _stateMachine.RegisterState<PlayerStateIdle>(PlayerState.Idle, this);
         _stateMachine.RegisterState<PlayerStateAttack>(PlayerState.Attack, this);
@@ -93,11 +95,10 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     {
         // get data code here
         // _status = ***
+        _hpModule.Init(_status.HP);
 
         _initialRotation = transform.rotation;
-
         _stateMachine.ChangeState(PlayerState.Idle);
-
         _scanRadiusMonsterCoroutine = StartCoroutine(ScanRadiusMonsters());
 
         //TODO :: erase
@@ -160,10 +161,14 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     private void Rotation()
     {
         Quaternion rotation = Quaternion.identity;
-        if (_stateMachine.CurStateType != PlayerState.Idle && _inRadiusMonsters.Count > 0)
+        if (_stateMachine.CurStateType != PlayerState.Idle)
         {
-            rotation = _character.transform.position.x < _inRadiusMonsters.First().transform.position.x
-                ? Defines.Player.RightRotation :  Defines.Player.LeftRotation;
+            if (_inRadiusMonsters.Count > 0 && _inRadiusMonsters[0])
+            {
+                rotation = _character.transform.position.x < _inRadiusMonsters[0].transform.position.x
+                    ? Defines.Player.RightRotation :  Defines.Player.LeftRotation;
+            }
+
         }
         else if (_moveInput.x != 0f) // PlayerState == Idle
         {
@@ -257,7 +262,6 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
             }
 
             targets = newTargets;
-
         }
 
         if (isSkillActive)
@@ -276,9 +280,9 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         // TODO : 구현 옮기기
         foreach (MonsterBehaviour monster in targets)
         {
-            monster.OnAttacked(gameObject);
-            ParticleEffectBehaviour effect = ResourceManager.Instance.Instantiate("Effect/Slash_Straight_11_BW", monster.BodyTransform).GetComponent<ParticleEffectBehaviour>();
+            monster.HPModule.TakeDamage(Damage, gameObject);
 
+            ParticleEffectBehaviour effect = ResourceManager.Instance.Instantiate("Effect/Slash_Straight_11_BW", monster.BodyTransform).GetComponent<ParticleEffectBehaviour>();
             if (transform.rotation.y == 0)
             {
                 effect.SetDirection(Direction.Right);
@@ -292,13 +296,11 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
 
     public void SkillAction(HashSet<MonsterBehaviour> targets)
     {
-        Debug.Log("Skill");
-
         foreach (MonsterBehaviour monster in targets)
         {
-            monster.OnAttacked(gameObject);
-            ParticleEffectBehaviour effect = ResourceManager.Instance.Instantiate("Effect/Slash_Circle_04_BW", monster.BodyTransform).GetComponent<ParticleEffectBehaviour>();
+            monster.HPModule.TakeDamage(Damage, gameObject);
 
+            ParticleEffectBehaviour effect = ResourceManager.Instance.Instantiate("Effect/Slash_Circle_04_BW", monster.BodyTransform).GetComponent<ParticleEffectBehaviour>();
             if (transform.rotation.y == 0)
             {
                 effect.SetDirection(Direction.Right);
