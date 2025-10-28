@@ -54,6 +54,8 @@ public struct BarracksStatus
 
 public abstract class BuildingBehaviour : MonoBehaviour
 {
+    #region variable
+
     [SerializeField]
     protected BuildingState _state;
     [SerializeField]
@@ -72,6 +74,8 @@ public abstract class BuildingBehaviour : MonoBehaviour
     private GameObject _destroyed;
     [SerializeField]
     private GameObject _buildUI;
+
+    #endregion
 
     #region property
 

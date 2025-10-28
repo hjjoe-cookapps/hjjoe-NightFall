@@ -43,7 +43,11 @@ public class TowerBehaviour : BuildingBehaviour
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        StopCoroutine(_scanRadiusMonsterCoroutine);
+        if (_scanRadiusMonsterCoroutine != null)
+        {
+            StopCoroutine(_scanRadiusMonsterCoroutine);
+        }
+
         StopCoroutine(_checkTimeCoroutine);
     }
 

@@ -23,9 +23,9 @@ public class PlayerStateSkill : PlayerStateBase
 
     public override void Exit()
     {
-        _context.Character.Animator.Play("IdleMelee");
-        _context.Character.Animator.ResetTrigger("Slash");
-        _context.Character.Animator.SetBool("Action", false);
+        _context.ExternCharacterScript.Animator.Play("IdleMelee");
+        _context.ExternCharacterScript.Animator.ResetTrigger("Slash");
+        _context.ExternCharacterScript.Animator.SetBool("Action", false);
 
         _context.StopCoroutine(_coroutine);
     }
@@ -46,7 +46,7 @@ public class PlayerStateSkill : PlayerStateBase
     {
         while (true)
         {
-            _context.Character.Slash();
+            _context.ExternCharacterScript.Slash();
             yield return CoroutineManager.WaitForSeconds(_context.WaitTime);
         }
     }

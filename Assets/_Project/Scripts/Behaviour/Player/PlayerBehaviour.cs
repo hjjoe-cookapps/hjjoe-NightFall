@@ -40,8 +40,10 @@ public struct CharacterStatus
 
 public class PlayerBehaviour : MonoBehaviour, IAttackAction
 {
+    #region variable
+
     [SerializeField]
-    private Character _character;
+    private Character _externCharacterScript;
     [SerializeField]
     private Rigidbody _rigidbody;
     [SerializeField]
@@ -62,8 +64,10 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
 
     private Coroutine _scanRadiusMonsterCoroutine;
 
+    #endregion
+
     #region property
-    public Character Character => _character;
+    public Character ExternCharacterScript => _externCharacterScript;
     public HPModule HPModule => _hpModule;
     public CharacterStatus CharacterStatus => _status;
     public bool IsSkillActive => isSkillActive;
@@ -81,7 +85,7 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     #region event
     private void Awake()
     {
-        _character = _character == null ? GetComponent<Character>() : _character;
+        _externCharacterScript = _externCharacterScript == null ? GetComponent<Character>() : _externCharacterScript;
         _rigidbody = _rigidbody == null ? GetComponent<Rigidbody>() : _rigidbody;
         _animationEvents = _animationEvents == null ? GetComponentInChildren<AnimationEvents>() : _animationEvents;
         _hpModule = _hpModule == null ? GetComponent<HPModule>() : _hpModule;
@@ -165,7 +169,7 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         {
             if (_inRadiusMonsters.Count > 0 && _inRadiusMonsters[0])
             {
-                rotation = _character.transform.position.x < _inRadiusMonsters[0].transform.position.x
+                rotation = _externCharacterScript.transform.position.x < _inRadiusMonsters[0].transform.position.x
                     ? Defines.Player.RightRotation :  Defines.Player.LeftRotation;
             }
 
@@ -220,12 +224,12 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         if (input.sqrMagnitude > 0.01f) // sqrMagnitude는 magnitude보다 성능이 좋음
         {
             _moveInput = new Vector3(input.x, 0f, input.y);
-            _character.SetState(CharacterState.Walk);
+
         }
         else
         {
             _moveInput = Vector3.zero;
-            _character.SetState(CharacterState.Idle);
+            _externCharacterScript.SetState(CharacterState.Idle);
         }
     }
 

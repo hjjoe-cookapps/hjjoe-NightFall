@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MT_Spear_01_V2
+  m_Shader: {fileID: 4800000, guid: eb8763ec0bd134340b01c2b018bffe2c, type: 3}
+  m_ValidKeywords:
+  - _GSTEP_ON
+  - _RDIST_ON
+  m_InvalidKeywords:
+  - _ASTEP_ON
+  - _STEPMASKSHARING1_ON
+  - _USEMASK_ON
+  - _USESTEP_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _DistTX:
+        m_Texture: {fileID: 2800000, guid: 28c7aad1372ff114b90d330f8a2dd938, type: 3}
+        m_Scale: {x: 1, y: 3}
+        m_Offset: {x: 0, y: 0}
+    - _MainTX:
+        m_Texture: {fileID: 2800000, guid: 4f96521143041ed499f42dbbf5c70b2e, type: 3}
+        m_Scale: {x: 1.7, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTX:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTX1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MatinTX:
+        m_Texture: {fileID: 2800000, guid: 4f96521143041ed499f42dbbf5c70b2e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StepTX:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StepTX1:
+        m_Texture: {fileID: 2800000, guid: 28c7aad1372ff114b90d330f8a2dd938, type: 3}
+        m_Scale: {x: 3, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _SubTX:
+        m_Texture: {fileID: 2800000, guid: 28c7aad1372ff114b90d330f8a2dd938, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubTX4:
+        m_Texture: {fileID: 2800000, guid: 28c7aad1372ff114b90d330f8a2dd938, type: 3}
+        m_Scale: {x: 2, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex4coord2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex4coord4:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aceil: 0
+    - _Astep: 1
+    - _Bceil: 0
+    - _Bmask: 0
+    - _DistPivotRelocation: -0.52
+    - _DistPolar: 0
+    - _DistSpeedX: 0
+    - _DistSpeedY: 0
+    - _Emission: 2
+    - _Gdist: 0
+    - _Gstep: 1
+    - _MainEmis: 1
+    - _MainOpa: 2
+    - _MainPow: 1
+    - _MaskPolar: 0
+    - _MaskPolarTiling: 1
+    - _MaskPolarTiling1: 1
+    - _MaskPolarXTiling: 1
+    - _MaskPolarYTiling: 1
+    - _Opacity: 2
+    - _Rceil: 0
+    - _Rdist: 1
+    - _StepMaskSharing: 0
+    - _StepMaskSharing1: 1
+    - _StepPolar: 0
+    - _StepSpeedX1: 0
+    - _StepSpeedY: 0
+    - _SubCeilStrength: 3.483
+    - _SubMinimumBright: 0
+    - _SubPolar: 0
+    - _SubSpeedX: 0
+    - _SubSpeedY: 0
+    - _UseDist: 0
+    - _UseMask: 1
+    - _UseStep: 1
+    - _UseSub: 0
+    - __dirty: 1
+    - _distpivotrelocation: 0.7
+    m_Colors:
+    - _DistSpeedXYPolarTilingWZ: {r: -0.2, g: 0, b: 1, a: 1}
+    - _StepSpeedXYPolarTilingWZ: {r: 0, g: 0, b: 1, a: 1}
+    - _StepSpeedXYPolarTilingWZ1: {r: -0.5, g: 0, b: 1, a: 1}
+    - _SubSpeedXYPolarTilingWZ: {r: 0, g: 0, b: 1, a: 1}
+    - _XYspeedZWceilStrength: {r: -0.3, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []

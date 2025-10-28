@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.iOS;
 using UnityEngine;
+using Object = System.Object;
 
 [Serializable]
 public struct WaveStatus
@@ -23,8 +24,14 @@ public class WaveBehaviour : MonoBehaviour
 {
     private static readonly float _troopDelay = 10f; // 모든 제너레이터 삭제 이후 delay 경과, 다음 제너레이터 생성
 
+    [SerializeField]
     private WaveStatus _status;
-    private List<GeneratorBehaviour> _generators;
+    private readonly List<GeneratorBehaviour> _generators = new();
+
+    public void Start()
+    {
+        StartCoroutine(Wave());
+    }
 
     public void Init(WaveStatus status)
     {
@@ -59,7 +66,7 @@ public class WaveBehaviour : MonoBehaviour
     {
         foreach (GeneratorStatus status in _status.Troops[currentTroopCount].Generators)
         {
-            var generator = ResourceManager.Instance.Instantiate("generator", transform).GetOrAddComponent<GeneratorBehaviour>();
+            var generator = ResourceManager.Instance.Instantiate("Generator").GetOrAddComponent<GeneratorBehaviour>();
             generator.Init(status);
             generator.OnDisableAction -= OnGeneratorDestroyAction;
             generator.OnDisableAction += OnGeneratorDestroyAction;

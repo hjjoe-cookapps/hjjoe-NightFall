@@ -97,7 +97,11 @@ public class ArrowBehaviour : MonoBehaviour
     {
         if (_target != null && _target.gameObject.activeSelf)
         {
-            _target.gameObject.GetRoot().GetComponent<HPModule>().TakeDamage(_damage, _creator);
+            HPModule module = _target.gameObject.GetRoot().GetComponent<HPModule>();
+            if (module != null)
+            {
+                module.TakeDamage(_damage, _creator);
+            }
         }
 
         // TODO : ChangeEffect;

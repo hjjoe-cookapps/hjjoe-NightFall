@@ -27,6 +27,8 @@ public class MonsterBehaviour : MonoBehaviour
     public static readonly int MoveAnimIndex = 2;
     public static readonly int DeathAnimIndex = 9;
 
+    #region variable
+
     [SerializeField]
     private NavMeshAgent _agent;
     [SerializeField]
@@ -52,6 +54,8 @@ public class MonsterBehaviour : MonoBehaviour
     private Coroutine _chaseCoroutine;
 
     private readonly StateMachine<MonsterState> _stateMachine = new();
+
+    #endregion
 
     #region property
     public NavMeshAgent Agent => _agent;
@@ -85,6 +89,7 @@ public class MonsterBehaviour : MonoBehaviour
         _bodyTransform = _bodyTransform == null ? transform.Find("Body")?.GetComponent<Transform>() : _bodyTransform;
         _hpModule = _hpModule == null ? GetComponent<HPModule>() : _hpModule;
 
+        _stateMachine.RegisterState<StateDefault<MonsterState>>(MonsterState.Default, this);
         _stateMachine.RegisterState<MonsterStateWalk>(MonsterState.Walk, this);
         _stateMachine.RegisterState<MonsterStateChase>(MonsterState.Chase, this);
         _stateMachine.RegisterState<MonsterStateAttack>(MonsterState.Attack, this);
@@ -122,6 +127,11 @@ public class MonsterBehaviour : MonoBehaviour
         UpdateChaseTarget();
 
         _stateMachine.Execute();
+    }
+
+    private void OnDisable()
+    {
+        _stateMachine.ChangeState(MonsterState.Default);
     }
 
     #endregion

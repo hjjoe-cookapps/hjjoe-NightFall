@@ -9,7 +9,6 @@ public class MonsterStateDead : MonsterStateBase
 
     public override void Enter()
     {
-        Debug.Log("Dead");
         _context.Agent.ResetPath();
         _context.Animator.ResetTrigger("Attack");
         _context.Animator.SetBool("Action", false);

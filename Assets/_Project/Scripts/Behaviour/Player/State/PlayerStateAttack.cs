@@ -24,9 +24,9 @@ public class PlayerStateAttack : PlayerStateBase
     public override void Exit()
     {
         // exit current animation
-        _context.Character.Animator.Play("IdleMelee");
-        _context.Character.Animator.ResetTrigger("Jab");
-        _context.Character.Animator.SetBool("Action", false);
+        _context.ExternCharacterScript.Animator.Play("IdleMelee");
+        _context.ExternCharacterScript.Animator.ResetTrigger("Jab");
+        _context.ExternCharacterScript.Animator.SetBool("Action", false);
 
         _context.StopCoroutine(_coroutine);
     }
@@ -47,7 +47,7 @@ public class PlayerStateAttack : PlayerStateBase
     {
         while (true)
         {
-            _context.Character.Jab();
+            _context.ExternCharacterScript.Jab();
             yield return CoroutineManager.WaitForSeconds(_context.WaitTime);
         }
     }

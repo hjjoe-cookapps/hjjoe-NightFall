@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Defines;
+using UnityEngine;
 
 public class MonsterStateWalk : MonsterStateBase
 {
@@ -15,6 +16,10 @@ public class MonsterStateWalk : MonsterStateBase
 
     public override void Execute()
     {
+        //Debug.Log(_context.Agent.destination);
+        //_context.Agent.SetDestination(_context.MainTarget.transform.position);
+        //_context.Rotation();
+        //Debug.Log(_context.Agent.destination);
         UpdateState();
     }
 

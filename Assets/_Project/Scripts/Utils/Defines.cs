@@ -21,6 +21,15 @@ namespace _Project.Scripts.Defines
         Walk,
         Chase,
         Attack,
+        Dead,
+        Default
+    }
+
+    public enum UnitState
+    {
+        Idle,
+        Chase,
+        Attack,
         Dead
     }
 
@@ -41,7 +50,7 @@ namespace _Project.Scripts.Defines
     {
         Melee,
         Ranged,
-        [Description("Maneater")]Maneater,
+        Maneater,
         Sky
     }
 
@@ -60,6 +69,14 @@ namespace _Project.Scripts.Defines
     {
 
     }
+
+    public enum Sound
+    {
+        BGM,
+        Effect
+    }
+
+
     public static class Defines
     {
         public static readonly LayerMask FriendLayer = LayerMask.GetMask("Player", "Building", "Unit");

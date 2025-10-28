@@ -13,12 +13,10 @@ public struct GeneratorStatus
 
 public class GeneratorBehaviour : MonoBehaviour
 {
-    private static readonly float _generateDelay = 0.1f;
+    private static readonly float _generateDelay = 1f;
 
     [SerializeField]
     private GeneratorStatus _status;
-    [SerializeField]
-    private GameObject _generateObject;
 
     public event Action<GeneratorBehaviour> OnDisableAction;
 

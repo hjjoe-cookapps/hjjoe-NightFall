@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MT_PyramidEye
+  m_Shader: {fileID: 10720, guid: 0000000000000000f000000000000000, type: 0}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _RDIST_ON
+  - _USEMASK_ON
+  - _USESTEP_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _DistTX:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTX:
+        m_Texture: {fileID: 2800000, guid: ffbfeba16adef0347b1fd4fccf37d1ef, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: ffbfeba16adef0347b1fd4fccf37d1ef, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTX:
+        m_Texture: {fileID: 2800000, guid: 03e4ee8d0b5f45045bb12e2930ed4058, type: 3}
+        m_Scale: {x: 0.2, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTX1:
+        m_Texture: {fileID: 2800000, guid: 03e4ee8d0b5f45045bb12e2930ed4058, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MatinTX:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StepTX:
+        m_Texture: {fileID: 2800000, guid: a693b6317f903ba4e90a400a0bc5f3ce, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StepTX1:
+        m_Texture: {fileID: 2800000, guid: 9b5a9cc654ddd104ba924fd069f26c10, type: 3}
+        m_Scale: {x: 1, y: 0.5}
+        m_Offset: {x: 0, y: 0.4}
+    - _SubTX:
+        m_Texture: {fileID: 2800000, guid: 8db604cba53f511489f0b5b94fa89850, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex4coord2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex4coord4:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aceil: 0
+    - _Bmask: 0
+    - _DistPivotRelocation: 0
+    - _DistPolar: 0
+    - _DistSpeedX: 0
+    - _DistSpeedY: 0
+    - _Emission: 2
+    - _Gstep: 0
+    - _MainEmis: 1
+    - _MainOpa: 2
+    - _MainOpaPow: 1
+    - _MainPow: 1
+    - _MaskPolar: 0
+    - _MaskPolarTiling: 1
+    - _MaskPolarTiling1: 1
+    - _MaskPolarXTiling: 1
+    - _MaskPolarYTiling: 1
+    - _Opacity: 2
+    - _Rdist: 1
+    - _StepMaskSharing: 0
+    - _StepMaskSharing1: 0
+    - _StepPolar: 0
+    - _StepSpeedX1: 0
+    - _StepSpeedY: 0
+    - _SubCeilStrength: 3
+    - _SubMinimumBright: 0
+    - _SubPolar: 0
+    - _SubSpeedX: 0
+    - _SubSpeedY: 0
+    - _UseDist: 0
+    - _UseMask: 1
+    - _UseStep: 1
+    - _UseSub: 0
+    - __dirty: 1
+    - _distpivotrelocation: 0.54
+    m_Colors:
+    - _DistSpeedXYPolarTilingWZ: {r: 0, g: 0, b: 1, a: 1}
+    - _StepSpeedXYPolarTilingWZ: {r: 0, g: 0, b: 1, a: 1}
+    - _StepSpeedXYPolarTilingWZ1: {r: 0.5, g: 0, b: 1, a: 1}
+    - _SubSpeedXYPolarTilingWZ: {r: 0.1, g: 0, b: 1, a: 1}
+    - _XYspeedZWceilStrength: {r: 0, g: -0.2, b: -0.23, a: 2.36}
+  m_BuildTextureStacks: []
