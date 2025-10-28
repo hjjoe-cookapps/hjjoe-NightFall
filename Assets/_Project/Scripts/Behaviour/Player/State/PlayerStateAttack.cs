@@ -13,21 +13,23 @@ public class PlayerStateAttack : PlayerStateBase
 
     public override void Enter()
     {
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Idle")
+        {
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+        }
         _coroutine = _context.StartCoroutine(AttackCoroutine());
     }
 
     public override void Execute()
     {
+        _context.UpdateMoveAnimation();
+        _context.Rotation();
         UpdateState();
     }
 
     public override void Exit()
     {
         // exit current animation
-        _context.ExternCharacterScript.Animator.Play("IdleMelee");
-        _context.ExternCharacterScript.Animator.ResetTrigger("Jab");
-        _context.ExternCharacterScript.Animator.SetBool("Action", false);
-
         _context.StopCoroutine(_coroutine);
     }
 
@@ -43,11 +45,12 @@ public class PlayerStateAttack : PlayerStateBase
         }
     }
 
+
     private IEnumerator AttackCoroutine()
     {
         while (true)
         {
-            _context.ExternCharacterScript.Jab();
+            _context.SkeletonAnimation.AnimationState.SetAnimation(1, "Attack", false);
             yield return CoroutineManager.WaitForSeconds(_context.WaitTime);
         }
     }

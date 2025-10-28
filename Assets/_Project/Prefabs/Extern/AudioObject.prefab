@@ -9,9 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 400000}
-  - component: {fileID: 11400002}
   - component: {fileID: 8200000}
-  - component: {fileID: 11400000}
   m_Layer: 0
   m_Name: AudioObject
   m_TagString: Untagged
@@ -34,24 +32,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &11400002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afc3135f9b5f7b5478b3a0645904bd2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxPoolSize: 10
-  preloadCount: 0
-  doNotDestroyOnLoad: 0
-  sendAwakeStartOnDestroyMessage: 1
-  sendPoolableActivateDeactivateMessages: 0
-  useReflectionInsteadOfMessages: 0
 --- !u!82 &8200000
 AudioSource:
   m_ObjectHideFlags: 0
@@ -63,6 +43,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -148,15 +129,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8cd7e379c2ccc242af04f0746d2d65b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

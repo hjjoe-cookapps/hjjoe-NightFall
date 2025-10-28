@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Defines;
+using Spine;
 using UnityEngine;
 
 public class MonsterStateDead : MonsterStateBase
@@ -9,26 +10,16 @@ public class MonsterStateDead : MonsterStateBase
 
     public override void Enter()
     {
-        _context.Agent.ResetPath();
-        _context.Animator.ResetTrigger("Attack");
-        _context.Animator.SetBool("Action", false);
-        _context.Animator.Play("Idle");
-        _context.Animator.SetInteger("State", MonsterBehaviour.DeathAnimIndex);
-
+        _context.RigidBody.linearVelocity = Vector2.zero;
+        _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Death", false);
     }
 
     public override void Execute()
     {
-        var state = _context.Animator.GetCurrentAnimatorStateInfo(0);
-        if (state.IsName("Death") && state.normalizedTime >= 1.0f)
-        {
-            ResourceManager.Instance.Destroy(_context.gameObject);
-        }
-        // 애니메이션 종료시 사망 처리
+        // 사망처리는 MonsterBehaviour -> OnAnimationComplete함수 확인
     }
 
     public override void Exit()
     {
     }
-
 }

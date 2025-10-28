@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _Project.Scripts.Defines;
-using Assets.FantasyMonsters.Common.Scripts;
+using Spine;
+using Spine.Unity;
 using UnityEngine;
-using UnityEngine.AI;
 using MonsterState = _Project.Scripts.Defines.MonsterState;
 
 [Serializable]
@@ -14,37 +14,30 @@ public struct MonsterStatus
     public string Name;
 
     public int HP;
-    public int MoveSpeed;
+    public float MoveSpeed;
 
     public int Damage;
     public int Cooltime;
-    public int Range;
+    public float Range;
 };
 
 public class MonsterBehaviour : MonoBehaviour
 {
-    public static readonly int IdleAnimIndex = 0;
-    public static readonly int MoveAnimIndex = 2;
-    public static readonly int DeathAnimIndex = 9;
-
     #region variable
 
     [SerializeField]
-    private NavMeshAgent _agent;
+    private Rigidbody2D _rigidbody;
     [SerializeField]
-    private Animator _animator;
-    [SerializeField]
-    private Monster _externMonsterScript;   // 외부 에셋의 스크립트
-    [SerializeField]
-    private Transform _bodyTransform;
+    private SkeletonAnimation _skeletonAnimation;
     [SerializeField]
     private HPModule _hpModule;
+
+    [SerializeField]
+    private Transform _centerTransform;
 
     //Todo: SerializedField 삭제할것, 테스트 용임
     [SerializeField]
     private MonsterStatus _status;
-
-    private Quaternion _initialRotation;
 
     private GameObject _mainTarget;
     private GameObject _inRangeTarget;
@@ -58,11 +51,10 @@ public class MonsterBehaviour : MonoBehaviour
     #endregion
 
     #region property
-    public NavMeshAgent Agent => _agent;
-    public Animator Animator => _animator;
-    public Monster ExternMonsterScript => _externMonsterScript;
-    public Transform BodyTransform => _bodyTransform;
-    public HPModule  HPModule => _hpModule;
+    public Rigidbody2D RigidBody => _rigidbody;
+    public SkeletonAnimation SkeletonAnimation => _skeletonAnimation;
+    public Transform CenterTransform => _centerTransform;
+    public HPModule  HpModule => _hpModule;
     public MonsterStatus Status => _status;
     public GameObject MainTarget => _mainTarget;
     public GameObject InRangeTarget
@@ -78,19 +70,12 @@ public class MonsterBehaviour : MonoBehaviour
     #region event
     private void Awake()
     {
-        if (_agent == null)
-        {
-            _agent = GetComponent<NavMeshAgent>();
-        }
-
-        _agent = _agent == null ? GetComponent<NavMeshAgent>() : _agent;
-        _animator = _animator == null ? GetComponent<Animator>() : _animator;
-        _externMonsterScript = _externMonsterScript == null ? GetComponent<Monster>() : _externMonsterScript;
-        _bodyTransform = _bodyTransform == null ? transform.Find("Body")?.GetComponent<Transform>() : _bodyTransform;
+        _rigidbody = _rigidbody == null ? GetComponent<Rigidbody2D>() : _rigidbody;
+        _skeletonAnimation = _skeletonAnimation == null ? GetComponentInChildren<SkeletonAnimation>() : _skeletonAnimation;
+        _centerTransform = _centerTransform == null ? transform.Find("Body")?.GetComponent<Transform>() : _centerTransform;
         _hpModule = _hpModule == null ? GetComponent<HPModule>() : _hpModule;
 
-        _stateMachine.RegisterState<StateDefault<MonsterState>>(MonsterState.Default, this);
-        _stateMachine.RegisterState<MonsterStateWalk>(MonsterState.Walk, this);
+        _stateMachine.RegisterState<MonsterStateMove>(MonsterState.Move, this);
         _stateMachine.RegisterState<MonsterStateChase>(MonsterState.Chase, this);
         _stateMachine.RegisterState<MonsterStateAttack>(MonsterState.Attack, this);
         _stateMachine.RegisterState<MonsterStateDead>(MonsterState.Dead, this);
@@ -102,22 +87,20 @@ public class MonsterBehaviour : MonoBehaviour
 
         _mainTarget = GameManager.Instance.Castle;
         _inRangeTarget = null;
-        _stateMachine.ChangeState(MonsterState.Walk);
-
+        _stateMachine.ChangeState(MonsterState.Move);
     }
 
     private void Start()
     {
-        _initialRotation = transform.rotation;
-
-        _externMonsterScript.OnEvent -= Attack;
-        _externMonsterScript.OnEvent += Attack;
+        _skeletonAnimation.AnimationState.Complete -= OnAnimationComplete;
+        _skeletonAnimation.AnimationState.Complete += OnAnimationComplete;
 
         _hpModule.OnDamageEventOpponent -= OnDamaged;
         _hpModule.OnDamageEventOpponent += OnDamaged;
 
         _hpModule.OnDeadEvent -= OnDead;
         _hpModule.OnDeadEvent += OnDead;
+
     }
 
     private void Update()
@@ -131,36 +114,68 @@ public class MonsterBehaviour : MonoBehaviour
 
     private void OnDisable()
     {
-        _stateMachine.ChangeState(MonsterState.Default);
     }
 
     #endregion
 
     public void Rotation()
     {
-        Quaternion rotation = Quaternion.identity;
+        float scaleX = _skeletonAnimation.Skeleton.ScaleX;
 
         switch (_stateMachine.CurStateType)
         {
-            case MonsterState.Walk:
+            case MonsterState.Move:
+                if(_mainTarget != null && _mainTarget.activeSelf)
+                {
+                    scaleX = transform.position.x < _mainTarget.transform.position.x ? 1 : -1;
+                }
+
+                break;
             case MonsterState.Chase:
-                rotation = (_agent.destination.x < transform.position.x) ? Defines.Monster.LeftRotation : Defines.Monster.RightRotation;
+                if(_chaseTarget != null && _chaseTarget.activeSelf)
+                {
+                    scaleX = transform.position.x < _chaseTarget.transform.position.x ? 1 : -1;
+                }
                 break;
             case MonsterState.Attack:
-                if (_inRangeTarget != null)
+                if (_inRangeTarget != null && _inRangeTarget.activeSelf)
                 {
-                    rotation = (_inRangeTarget.transform.position.x < transform.position.x) ? Defines.Monster.LeftRotation : Defines.Monster.RightRotation;
-                }
-                else
-                {
-                    return;
+                    scaleX = transform.position.x < _inRangeTarget.transform.position.x ? 1 : -1;
                 }
                 break;
             case MonsterState.Dead:
                 return;
         }
 
-        transform.rotation = _initialRotation * rotation;
+        if (scaleX != _skeletonAnimation.Skeleton.ScaleX)
+        {
+            _skeletonAnimation.Skeleton.ScaleX = scaleX;
+        }
+    }
+
+    public void Move()
+    {
+        Vector2 velocity = Vector2.zero;
+        switch (_stateMachine.CurStateType)
+        {
+            case MonsterState.Move:
+                if (_mainTarget != null && _mainTarget.activeSelf)
+                {
+                    velocity = _mainTarget.transform.position - transform.position;
+                }
+                break;
+            case MonsterState.Chase:
+                if (_chaseTarget != null && _chaseTarget.activeSelf)
+                {
+                    velocity = _chaseTarget.transform.position - transform.position;
+                }
+                break;
+            case MonsterState.Attack:
+            case MonsterState.Dead:
+                return;
+        }
+
+        _rigidbody.linearVelocity = velocity.normalized * _status.MoveSpeed;
     }
 
     public void Attack(string str)
@@ -210,14 +225,26 @@ public class MonsterBehaviour : MonoBehaviour
 
     }
 
+    private void OnAnimationComplete(TrackEntry trackEntry)
+    {
+        switch (trackEntry.Animation.Name)
+        {
+            case "Death":
+            {
+                ResourceManager.Instance.Destroy(gameObject);
+                break;
+            }
+        }
+    }
+
     private void UpdateRadiusTargets()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position,
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position,
             _status.Range, Defines.FriendLayer);
 
         var inRadiusTargets = new List<(GameObject target, float dist)>();
 
-        foreach (Collider collider in hitColliders)
+        foreach (Collider2D collider in hitColliders)
         {
             inRadiusTargets.Add((collider.gameObject, (transform.position - collider.transform.position).sqrMagnitude));
         }

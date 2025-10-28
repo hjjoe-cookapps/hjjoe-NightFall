@@ -12,13 +12,15 @@ namespace _Project.Scripts.Defines
     public enum PlayerState
     {
         Idle,
+        Move,
         Attack,
-        Skill
+        Skill,
+        Dead
     }
 
     public enum MonsterState
     {
-        Walk,
+        Move,
         Chase,
         Attack,
         Dead,

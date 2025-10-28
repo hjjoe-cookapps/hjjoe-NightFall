@@ -75,7 +75,7 @@ public class TowerBehaviour : BuildingBehaviour
         foreach (var monster in targets)
         {
             ArrowBehaviour arrow = ResourceManager.Instance.Instantiate("Effect/Arrow", _arrowGenerateTransform.position).GetOrAddComponent<ArrowBehaviour>();
-            arrow.Init(gameObject, _towerStatus.Damage, transform.position, monster.BodyTransform);
+            arrow.Init(gameObject, _towerStatus.Damage, transform.position, monster.CenterTransform);
         }
 
     }

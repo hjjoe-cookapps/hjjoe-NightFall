@@ -13,13 +13,16 @@ public class MonsterStateChase : MonsterStateBase
 
     public override void Enter()
     {
-        _context.Animator.SetInteger("State", MonsterBehaviour.MoveAnimIndex);
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Move")
+        {
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Move", true);
+        }
         _chaseCoroutine = _context.StartCoroutine(ChaseCoroutine());
     }
 
     public override void Execute()
     {
-        CheckTargetInRadius();
+        //CheckTargetInRadius();
         UpdateState();
     }
 
@@ -28,7 +31,6 @@ public class MonsterStateChase : MonsterStateBase
         if (_context.ChaseTarget)
         {
             Vector3 distance = _context.ChaseTarget.transform.position - _context.transform.position;
-            distance.y = 0;
 
             if (distance.magnitude <= _context.Status.Range)
             {
@@ -39,7 +41,6 @@ public class MonsterStateChase : MonsterStateBase
 
     public override void Exit()
     {
-        _context.Animator.SetInteger("State", MonsterBehaviour.IdleAnimIndex);
         _context.StopCoroutine(_chaseCoroutine);
     }
 
@@ -51,7 +52,7 @@ public class MonsterStateChase : MonsterStateBase
         }
         else if (_context.ChaseTarget == null)
         {
-            _context.StateMachine.ChangeState(MonsterState.Walk);
+            _context.StateMachine.ChangeState(MonsterState.Move);
         }
     }
 
@@ -61,7 +62,7 @@ public class MonsterStateChase : MonsterStateBase
         {
             if (_context.ChaseTarget != null)
             {
-                _context.Agent.SetDestination(_context.ChaseTarget.transform.position);
+                _context.Move();
                 _context.Rotation();
             }
             yield return CoroutineManager.WaitForSeconds(0.2f);

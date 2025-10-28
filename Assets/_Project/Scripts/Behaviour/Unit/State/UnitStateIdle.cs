@@ -1,5 +1,4 @@
 ﻿using _Project.Scripts.Defines;
-using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 
 public class UnitStateIdle : UnitStateBase
 {
@@ -9,8 +8,7 @@ public class UnitStateIdle : UnitStateBase
 
     public override void Enter()
     {
-        _context.Agent.ResetPath();
-        _context.ExternCharacterScript.SetState(CharacterState.Idle);
+        //_context.Agent.ResetPath();
     }
 
     public override void Execute()

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using _Project.Scripts.Defines;
+using Spine;
 using UnityEngine;
 
 public class MonsterStateAttack : MonsterStateBase
@@ -12,7 +13,7 @@ public class MonsterStateAttack : MonsterStateBase
 
     public override void Enter()
     {
-        _context.Agent.ResetPath();
+        _context.RigidBody.linearVelocity = Vector2.zero;
         _coroutine = _context.StartCoroutine(AttackCoroutine());
     }
 
@@ -25,18 +26,16 @@ public class MonsterStateAttack : MonsterStateBase
     {
         _context.StopCoroutine(_coroutine);
         _coroutine = null;
-        _context.Animator.ResetTrigger("Attack");
     }
 
     private void UpdateState()
     {
         if (_context.InRangeTarget == null)
         {
-            AnimatorStateInfo stateInfo = _context.Animator.GetCurrentAnimatorStateInfo(0);
-
-            if (!stateInfo.IsName("Attack"))
+            TrackEntry trackEntry = _context.SkeletonAnimation.AnimationState.GetCurrent(0);
+            if (trackEntry.Animation.Name != "Attack")
             {
-                _context.StateMachine.ChangeState(MonsterState.Walk);
+                _context.StateMachine.ChangeState(MonsterState.Move);
             }
         }
     }
@@ -45,7 +44,8 @@ public class MonsterStateAttack : MonsterStateBase
     {
         while (true)
         {
-            _context.Animator.SetTrigger("Attack");
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Attack", false);
+            _context.SkeletonAnimation.AnimationState.AddAnimation(0, "Idle", false, 0);
             _context.Rotation();
             yield return CoroutineManager.WaitForSeconds(_context.Status.Cooltime);
         }

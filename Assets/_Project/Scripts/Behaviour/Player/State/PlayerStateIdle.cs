@@ -7,6 +7,10 @@ public class PlayerStateIdle : PlayerStateBase
     {
     }
 
+    public override void Enter()
+    {
+        _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+    }
     public override void Execute()
     {
         UpdateState();
@@ -24,6 +28,10 @@ public class PlayerStateIdle : PlayerStateBase
             {
                 _context.StateMachine.ChangeState(PlayerState.Attack);
             }
+        }
+        else if (_context.MoveInput.sqrMagnitude > 0)
+        {
+            _context.StateMachine.ChangeState(PlayerState.Move);
         }
     }
 }

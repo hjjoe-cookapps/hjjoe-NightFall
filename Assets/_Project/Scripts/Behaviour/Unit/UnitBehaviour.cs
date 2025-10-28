@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
 using _Project.Scripts.Defines;
-using Assets.HeroEditor.Common.Scripts.CharacterScripts;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
-using UnityEngine.AI;
 
 [Serializable]
 public struct UnityStatus
@@ -12,7 +9,7 @@ public struct UnityStatus
     public string Name;
 
     public int HP;
-    public int MoveSpeed;
+    public float MoveSpeed;
 
     public AttackType AttackType;
     public bool IsAttackSplash;
@@ -26,10 +23,6 @@ public class UnitBehaviour : MonoBehaviour
 {
     #region variable
 
-    [SerializeField]
-    private NavMeshAgent _agent;
-    [SerializeField]
-    private Character _externCharacterScript;
     [SerializeField]
     private HPModule _hpModule;
 
@@ -50,8 +43,6 @@ public class UnitBehaviour : MonoBehaviour
 
     #region property
 
-    public NavMeshAgent Agent => _agent;
-    public Character ExternCharacterScript => _externCharacterScript;
     public HPModule HPModule => _hpModule;
 
     public UnityStatus Status => _status;
@@ -67,8 +58,6 @@ public class UnitBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        _agent = _agent == null ?  GetComponent<NavMeshAgent>() : _agent;
-        _externCharacterScript = _externCharacterScript == null ?  GetComponent<Character>() : _externCharacterScript;
         _hpModule = _hpModule == null ? GetComponent<HPModule>() : _hpModule;
 
         _stateMachine.RegisterState<UnitStateIdle>(UnitState.Idle, this);
@@ -110,7 +99,7 @@ public class UnitBehaviour : MonoBehaviour
             case UnitState.Idle:
                 break;
             case UnitState.Chase:
-                rotation = (_agent.destination.x < transform.position.x) ? Defines.Monster.LeftRotation : Defines.Monster.RightRotation;
+                //rotation = (_agent.destination.x < transform.position.x) ? Defines.Monster.LeftRotation : Defines.Monster.RightRotation;
                 break;
             case UnitState.Attack:
                 if (_inRangeTarget != null)

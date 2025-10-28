@@ -1,5 +1,4 @@
 ﻿using _Project.Scripts.Defines;
-using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 
 public class UnitStateDead : UnitStateBase
 {
@@ -9,9 +8,7 @@ public class UnitStateDead : UnitStateBase
 
     public override void Enter()
     {
-        _context.Agent.ResetPath();
-
-        _context.ExternCharacterScript.SetState(CharacterState.DeathF);
+        //_context.Agent.ResetPath();
     }
 
     public override void Execute()

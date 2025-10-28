@@ -22,8 +22,6 @@ public class UnitStateAttack : UnitStateBase
 
     public override void Exit()
     {
-        _context.ExternCharacterScript.Animator.ResetTrigger("Slash");
-        _context.ExternCharacterScript.Animator.SetBool("Action", false);
     }
 
     private void UpdateState()
