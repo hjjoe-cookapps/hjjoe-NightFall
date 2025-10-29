@@ -30,6 +30,7 @@ public class GeneratorBehaviour : MonoBehaviour
         for (int i = 0; i < _status.GenerateCount; ++i)
         {
            MonsterBehaviour monster = ResourceManager.Instance.Instantiate("Monster/" + _status.Type.ToDescription(), _status.Position).GetComponent<MonsterBehaviour>();
+           GameManager.Instance.AddMonster(monster.gameObject);
            monster.OnDeadEvent -= GameManager.Instance.OnMonsterDisableAction;
            monster.OnDeadEvent += GameManager.Instance.OnMonsterDisableAction;
 

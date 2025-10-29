@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class CoinBehaviour : MonoBehaviour
+public class WoodBehaviour : MonoBehaviour
 {
-    private static readonly int _moveSpeed = 1;
+    private static readonly float _moveSpeed = 0.2f;
     [SerializeField]
     private ActionModule _actionModule;
 
@@ -17,8 +17,8 @@ public class CoinBehaviour : MonoBehaviour
     {
         _player = GameManager.Instance.Player;
 
-        _actionModule.OnDisableEvent -= GameManager.Instance.AddCoin;
-        _actionModule.OnDisableEvent += GameManager.Instance.AddCoin;
+        _actionModule.OnDisableEvent -= GameManager.Instance.AddWood;
+        _actionModule.OnDisableEvent += GameManager.Instance.AddWood;
     }
 
     private void Update()
@@ -30,7 +30,7 @@ public class CoinBehaviour : MonoBehaviour
 
         transform.position += direction * _moveSpeed;
 
-        if (magnitude < 0.5f)
+        if (magnitude < 0.2f)
         {
             ResourceManager.Instance.Destroy(gameObject);
         }

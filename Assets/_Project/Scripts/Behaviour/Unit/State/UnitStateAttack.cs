@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Defines;
+using Spine;
 using UnityEngine;
 
 public class UnitStateAttack : UnitStateBase
@@ -37,8 +38,11 @@ public class UnitStateAttack : UnitStateBase
         if (_context.IsAttackAble)
         {
             _context.IsAttackAble = false;
-            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Attack", false);
-            _context.SkeletonAnimation.AnimationState.AddAnimation(0, "Idle", true, 0);
+            TrackEntry trackEntry = _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Attack", false);
+            trackEntry.Complete += delegate
+            {
+                _context.SkeletonAnimation.AnimationState.AddAnimation(0, "Idle", true, 0);
+            };
             _context.Rotation();
         }
     }

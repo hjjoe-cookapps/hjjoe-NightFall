@@ -25,6 +25,11 @@ public class HPModule : MonoBehaviour
         _hp = hp;
     }
 
+    public void Reset()
+    {
+        _hp = _maxhp;
+    }
+
     public void SetHP(int hp)
     {
         _hp = Math.Clamp(hp, 0, _maxhp);

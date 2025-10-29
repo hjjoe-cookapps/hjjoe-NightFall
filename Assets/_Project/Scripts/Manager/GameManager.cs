@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using _Project.Scripts.Defines;
-using JetBrains.Annotations;
-using Unity.VisualScripting;
+using CookApps.Inspector;
 using UnityEngine;
-
-
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
-    [NotNull]
+    [Required]
     [SerializeField]
     private GameObject _castle;
     [SerializeField]
@@ -23,13 +20,13 @@ public class GameManager : SingletonBehaviour<GameManager>
     // 게임 로직
     private readonly HashSet<GameObject> _monsters = new();  // 필요한가?
     private WaveBehaviour _waveBehaviour;
-    private readonly HashSet<BuildingBehaviour> _buildings = new();
+    private HashSet<BuildingBehaviour> _buildings;
     [SerializeField]    // TODO : erase
     private StageStatus _status;
     private int _currentWaveCount;
 
     // 게임 플레이용 재화
-    private int _coin = 10; // TODO : 10 지우기
+    private int _wood = 10; // TODO : 10 지우기
 
     #region property
 
@@ -48,7 +45,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
     public IReadOnlyCollection<GameObject> Monsters => _monsters;
 
-    public int Coin => _coin;
+    public int Wood => _wood;
 
     #endregion
 
@@ -58,6 +55,9 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             _player = GameObject.FindWithTag("Player");
         }
+
+        _buildings = GameObject.FindGameObjectsWithTag("Building").Select(obj => obj.GetComponent<BuildingBehaviour>())
+            .ToHashSet();
 
         _currentWaveCount = 0;
     }
@@ -69,14 +69,14 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #region for Actions
 
-    public void AddCoin()
+    public void AddWood()
     {
-        ++_coin;
+        ++_wood;
     }
 
-    public void LoseCoin(int num)
+    public void LoseWood(int num)
     {
-        _coin -= num;
+        _wood -= num;
     }
 
     public void OnMonsterDisableAction(GameObject gameObject)
@@ -137,4 +137,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
     }
 
+    public bool AddMonster(GameObject monster)
+    {
+        return _monsters.Add(monster);
+    }
 }

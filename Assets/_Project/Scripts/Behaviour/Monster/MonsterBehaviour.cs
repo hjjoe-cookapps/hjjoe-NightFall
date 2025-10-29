@@ -6,6 +6,7 @@ using _Project.Scripts.Defines;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
+using Event = Spine.Event;
 using MonsterState = _Project.Scripts.Defines.MonsterState;
 
 [Serializable]
@@ -105,6 +106,9 @@ public class MonsterBehaviour : MonoBehaviour
 
     private void Start()
     {
+        _skeletonAnimation.AnimationState.Event -= Attack;
+        _skeletonAnimation.AnimationState.Event += Attack;
+
         _skeletonAnimation.AnimationState.Complete -= OnAnimationComplete;
         _skeletonAnimation.AnimationState.Complete += OnAnimationComplete;
 
@@ -127,6 +131,7 @@ public class MonsterBehaviour : MonoBehaviour
 
     private void OnDisable()
     {
+        OnDeadEvent?.Invoke(gameObject);
         StopAllCoroutines();
     }
 
@@ -192,25 +197,6 @@ public class MonsterBehaviour : MonoBehaviour
         _rigidbody.linearVelocity = velocity.normalized * _status.MoveSpeed;
     }
 
-    public void Attack(string str)
-    {
-        // 애니메이터에 의해 공격 애니메이션 중 발생하는 함수
-        if (_inRangeTarget == null || !_inRangeTarget.activeSelf)
-        {
-            return;
-        }
-
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _status.Range, Defines.FriendLayer);
-
-        foreach (Collider col in hitColliders)
-        {
-            if (col.gameObject == _inRangeTarget)
-            {
-                _inRangeTarget.GetRoot().GetComponent<HPModule>()?.TakeDamage(_status.Damage, gameObject);
-            }
-        }
-    }
-
     public void OnDead()
     {
         _stateMachine.ChangeState(MonsterState.Dead);
@@ -237,6 +223,32 @@ public class MonsterBehaviour : MonoBehaviour
             _chaseCoroutine = StartCoroutine(ChaseCoroutine());
         }
 
+    }
+
+    private void Attack(TrackEntry trackEntry, Event e)
+    {
+        if (e.Data.Name != "Attack_Hit")
+        {
+
+            return;
+        }
+
+        // 애니메이터에 의해 공격 애니메이션 중 발생하는 함수
+        if (_inRangeTarget == null || !_inRangeTarget.activeSelf)
+        {
+            return;
+        }
+
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position,
+            _status.Range, Defines.FriendLayer);
+
+        foreach (Collider2D col in hitColliders)
+        {
+            if (col.gameObject == _inRangeTarget)
+            {
+                _inRangeTarget.GetRoot().GetComponent<HPModule>()?.TakeDamage(_status.Damage, gameObject);
+            }
+        }
     }
 
     private void OnAnimationComplete(TrackEntry trackEntry)

@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BarracksBehaviour : BuildingBehaviour
 {
-   private HashSet<UnitBehaviour> _unitBehaviours = new();
+    [SerializeField]
+    private BarracksStatus _barracksStatus;
+
+    private HashSet<UnitBehaviour> _unitBehaviours = new();
 
     public override void StartWave()
     {

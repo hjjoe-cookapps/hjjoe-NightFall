@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using _Project.Scripts.Defines;
+using CookApps.Inspector;
 using UnityEngine;
 
 
@@ -8,8 +10,14 @@ public struct BuildingStatus
 {
     public BulidingType Type;
     public int HP;
+
+    // For Farm, castle
     public int CoinReward;
 
+    // upgrade
+    public int maxlevel;
+    public int level;
+    public UpgradeStatus[] upgradeStatuses;
     // 타워용 전투 관련 어쩌구저쩌구
 
     // 업그레이드 관련 데이터?
@@ -23,7 +31,8 @@ public struct BuildingStatus
 [Serializable]
 public struct UpgradeStatus
 {
-
+    public int level;   // 단계별
+    public int Cost;
 }
 
 [Serializable]
@@ -67,7 +76,13 @@ public abstract class BuildingBehaviour : MonoBehaviour
     // 3. 업그레이드 UI sprite -> 최종 인 경우에는 없어도 됨
 
     [SerializeField]
-    private GameObject _default;
+    private List<GameObject> OnBattleHiddenObjects =  new();
+
+    // 테크트리 추가되면 buildUI를 또 처리해야되는데 어케하지
+    //TODO : _buildUI는 건물 업그레이드 완료이후에는 낮에도, 밤에도 안보여야함
+
+    [SerializeField]
+    private GameObject _default;    // List로 변경
     [SerializeField]
     private GameObject _destroyed;
     [SerializeField]
@@ -113,6 +128,11 @@ public abstract class BuildingBehaviour : MonoBehaviour
         _state = BuildingState.Idle;
         _hpModule.Init(_buildingStatus.HP);
 
+        foreach (var obj in OnBattleHiddenObjects)
+        {
+            obj.SetActive(false);
+        }
+
         _default?.SetActive(true);
         _destroyed?.SetActive(false);
         _buildUI?.SetActive(false);
@@ -121,7 +141,12 @@ public abstract class BuildingBehaviour : MonoBehaviour
     public virtual void EndWave() // 웨이브 종료시 호출
     {
         _state = BuildingState.Wait;
-        _hpModule = _hpModule == null ?  GetComponent<HPModule>() : _hpModule;
+        _hpModule.Reset();
+
+        foreach (GameObject obj in OnBattleHiddenObjects)
+        {
+            obj.SetActive(true);
+        }
 
         _default?.SetActive(true);
         _destroyed?.SetActive(false);
@@ -132,6 +157,11 @@ public abstract class BuildingBehaviour : MonoBehaviour
     // Idle에서의 동작
     protected virtual void Active()
     {
+    }
+
+    protected virtual void Upgrade()
+    {
+
     }
 
     protected virtual void OnDestroy()
