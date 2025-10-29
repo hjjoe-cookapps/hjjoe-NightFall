@@ -3,13 +3,6 @@ using System.Collections;
 using _Project.Scripts.Defines;
 using UnityEngine;
 
-[Serializable]
-public struct GeneratorStatus
-{
-    public MonsterType Type;
-    public int GenerateCount;
-    public Vector3 Position;
-}
 
 public class GeneratorBehaviour : MonoBehaviour
 {
@@ -36,10 +29,9 @@ public class GeneratorBehaviour : MonoBehaviour
     {
         for (int i = 0; i < _status.GenerateCount; ++i)
         {
-           GameObject monster = ResourceManager.Instance.Instantiate("Monster/" + _status.Type.ToDescription(), _status.Position);
-           ActionModule module = monster.GetOrAddComponent<ActionModule>();
-           module.OnDisableEvent -= GameManager.Instance.OnMonsterDestroyAction;
-           module.OnDisableEvent += GameManager.Instance.OnMonsterDestroyAction;
+           MonsterBehaviour monster = ResourceManager.Instance.Instantiate("Monster/" + _status.Type.ToDescription(), _status.Position).GetComponent<MonsterBehaviour>();
+           monster.OnDeadEvent -= GameManager.Instance.OnMonsterDisableAction;
+           monster.OnDeadEvent += GameManager.Instance.OnMonsterDisableAction;
 
            yield return CoroutineManager.WaitForSeconds(_generateDelay);
         }

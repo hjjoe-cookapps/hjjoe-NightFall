@@ -17,13 +17,14 @@ public struct MonsterStatus
     public float MoveSpeed;
 
     public int Damage;
-    public int Cooltime;
+    public float WaitTime;
     public float Range;
 };
 
 public class MonsterBehaviour : MonoBehaviour
 {
     #region variable
+    public event Action<GameObject> OnDeadEvent;
 
     [SerializeField]
     private Rigidbody2D _rigidbody;
@@ -31,7 +32,6 @@ public class MonsterBehaviour : MonoBehaviour
     private SkeletonAnimation _skeletonAnimation;
     [SerializeField]
     private HPModule _hpModule;
-
     [SerializeField]
     private Transform _centerTransform;
 
@@ -42,6 +42,9 @@ public class MonsterBehaviour : MonoBehaviour
     private GameObject _mainTarget;
     private GameObject _inRangeTarget;
 
+    private bool _isAttackAble;
+    private Coroutine _checkAttackTimeCoroutine;
+
     private bool _isAttacked;   // 공격 받은 경우 그 대상을 특정 시간동안 추적하게 처리
     private GameObject _chaseTarget;
     private Coroutine _chaseCoroutine;
@@ -51,7 +54,7 @@ public class MonsterBehaviour : MonoBehaviour
     #endregion
 
     #region property
-    public Rigidbody2D RigidBody => _rigidbody;
+    public Rigidbody2D Rigidbody => _rigidbody;
     public SkeletonAnimation SkeletonAnimation => _skeletonAnimation;
     public Transform CenterTransform => _centerTransform;
     public HPModule  HpModule => _hpModule;
@@ -62,6 +65,13 @@ public class MonsterBehaviour : MonoBehaviour
         get => _inRangeTarget;
         set => _inRangeTarget = value;
     }
+
+    public bool IsAttackAble
+    {
+        get => _isAttackAble;
+        set => _isAttackAble = value;
+    }
+
     public GameObject ChaseTarget => _chaseTarget;
     public StateMachine<MonsterState> StateMachine => _stateMachine;
 
@@ -87,7 +97,10 @@ public class MonsterBehaviour : MonoBehaviour
 
         _mainTarget = GameManager.Instance.Castle;
         _inRangeTarget = null;
+
+        _checkAttackTimeCoroutine = StartCoroutine(CheckAttackTimeCoroutine());
         _stateMachine.ChangeState(MonsterState.Move);
+
     }
 
     private void Start()
@@ -114,6 +127,7 @@ public class MonsterBehaviour : MonoBehaviour
 
     private void OnDisable()
     {
+        StopAllCoroutines();
     }
 
     #endregion
@@ -276,6 +290,20 @@ public class MonsterBehaviour : MonoBehaviour
             {
                 ReleaseChase();
             }
+        }
+    }
+
+    private IEnumerator CheckAttackTimeCoroutine()
+    {
+        while (true)
+        {
+            if (!_isAttackAble)
+            {
+                yield return CoroutineManager.WaitForSeconds(_status.WaitTime);
+                _isAttackAble = true;
+            }
+
+            yield return null;
         }
     }
 

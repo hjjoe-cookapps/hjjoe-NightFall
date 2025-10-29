@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Defines;
+using UnityEngine;
 
 public class UnitStateDead : UnitStateBase
 {
@@ -8,7 +9,9 @@ public class UnitStateDead : UnitStateBase
 
     public override void Enter()
     {
-        //_context.Agent.ResetPath();
+        _context.Rigidbody.linearVelocity = Vector2.zero;
+        _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Death", false);
+
     }
 
     public override void Execute()
@@ -18,7 +21,7 @@ public class UnitStateDead : UnitStateBase
 
     public override void Exit()
     {
-
+        // 사망처리는 MonsterBehaviour -> OnAnimationComplete함수 확인
     }
 
     private void UpdateState()

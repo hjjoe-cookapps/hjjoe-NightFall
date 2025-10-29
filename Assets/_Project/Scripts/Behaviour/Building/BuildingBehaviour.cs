@@ -17,8 +17,6 @@ public struct BuildingStatus
 
     // 병영 관련 데이터
 
-
-
 }
 
 // 테크트리 구현은 나중에 처리
@@ -110,7 +108,7 @@ public abstract class BuildingBehaviour : MonoBehaviour
     }
     #endregion
 
-    public virtual void StartBattle()   // 전투 시작시 동작
+    public virtual void StartWave()   // 전투 시작시 동작
     {
         _state = BuildingState.Idle;
         _hpModule.Init(_buildingStatus.HP);
@@ -120,12 +118,7 @@ public abstract class BuildingBehaviour : MonoBehaviour
         _buildUI?.SetActive(false);
     }
 
-    // Idle에서의 동작
-    protected virtual void Active()
-    {
-    }
-
-    protected virtual void Regenerate() // 웨이브 종료시 호출
+    public virtual void EndWave() // 웨이브 종료시 호출
     {
         _state = BuildingState.Wait;
         _hpModule = _hpModule == null ?  GetComponent<HPModule>() : _hpModule;
@@ -133,9 +126,14 @@ public abstract class BuildingBehaviour : MonoBehaviour
         _default?.SetActive(true);
         _destroyed?.SetActive(false);
         _buildUI?.SetActive(true);
-
         // 체력 초기화?
     }
+
+    // Idle에서의 동작
+    protected virtual void Active()
+    {
+    }
+
     protected virtual void OnDestroy()
     {
         _state = BuildingState.Crash;
@@ -144,4 +142,3 @@ public abstract class BuildingBehaviour : MonoBehaviour
         _destroyed?.SetActive(true);
     }
 }
-

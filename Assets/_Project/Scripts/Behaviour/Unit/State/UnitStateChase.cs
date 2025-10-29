@@ -8,22 +8,33 @@ public class UnitStateChase : UnitStateBase
 
     public override void Enter()
     {
-        //_context.Agent.SetDestination(_context.AnyTarget.transform.position);
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Move")
+        {
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Move", true);
+        }
         _context.Rotation();
     }
 
     public override void Execute()
     {
-
+        _context.Move();
+        UpdateState();
     }
 
     public override void Exit()
     {
-
     }
 
     private void UpdateState()
     {
+        if (_context.InRangeTarget != null)
+        {
+            _context.StateMachine.ChangeState(UnitState.Attack);
 
+        }
+        else if (_context.InRangeTarget == null)
+        {
+            _context.StateMachine.ChangeState(UnitState.Idle);
+        }
     }
 }

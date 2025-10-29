@@ -1,24 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.iOS;
+using _Project.Scripts.Defines;
 using UnityEngine;
-using Object = System.Object;
-
-[Serializable]
-public struct WaveStatus
-{
-    public int TroupCount;
-    public List<TroopStatus> Troops;
-}
-
-[Serializable]
-public struct TroopStatus
-{
-    public int GeneratorCount;
-    public List<GeneratorStatus> Generators;
-}
 
 public class WaveBehaviour : MonoBehaviour
 {
@@ -27,11 +10,6 @@ public class WaveBehaviour : MonoBehaviour
     [SerializeField]
     private WaveStatus _status;
     private readonly List<GeneratorBehaviour> _generators = new();
-
-    public void Start()
-    {
-        StartCoroutine(Wave());
-    }
 
     public void Init(WaveStatus status)
     {
@@ -55,18 +33,20 @@ public class WaveBehaviour : MonoBehaviour
                 yield return null;
             }
 
-            yield return new WaitForSeconds(_troopDelay);
+            if (i != _status.Troops.Count - 1)
+            {
+                yield return new WaitForSeconds(_troopDelay);
+            }
         }
 
         ResourceManager.Instance.Destroy(gameObject);
-
     }
 
     private void GenerateGenerators(int currentTroopCount)
     {
         foreach (GeneratorStatus status in _status.Troops[currentTroopCount].Generators)
         {
-            var generator = ResourceManager.Instance.Instantiate("Generator").GetOrAddComponent<GeneratorBehaviour>();
+            var generator = ResourceManager.Instance.Instantiate("Generator", transform).GetOrAddComponent<GeneratorBehaviour>();
             generator.Init(status);
             generator.OnDisableAction -= OnGeneratorDestroyAction;
             generator.OnDisableAction += OnGeneratorDestroyAction;

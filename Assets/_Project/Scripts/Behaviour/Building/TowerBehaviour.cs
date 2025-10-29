@@ -21,14 +21,14 @@ public class TowerBehaviour : BuildingBehaviour
     protected override void Start()
     {
         base.Start();
-        StartBattle(); // 반드시 지워야함 !!!!!!!!!!!!!!!!!!!
+        StartWave(); // TODO :: 반드시 지워야함 !!!!!!!!!!!!!!!!!!!
     }
 
-    public override void StartBattle()
+    public override void StartWave()
     {
-        base.StartBattle();
-        _scanRadiusMonsterCoroutine = StartCoroutine(ScanRadiusMonsters());
-        _checkTimeCoroutine = StartCoroutine(CheckTime());
+        base.StartWave();
+        _scanRadiusMonsterCoroutine = StartCoroutine(ScanRadiusMonstersCoroutine());
+        _checkTimeCoroutine = StartCoroutine(CheckTimeCoroutine());
     }
 
     protected override void Active()
@@ -81,7 +81,7 @@ public class TowerBehaviour : BuildingBehaviour
     }
 
 
-    private IEnumerator ScanRadiusMonsters()
+    private IEnumerator ScanRadiusMonstersCoroutine()
     {
         while (true)
         {
@@ -90,7 +90,7 @@ public class TowerBehaviour : BuildingBehaviour
         }
     }
 
-    private IEnumerator CheckTime()
+    private IEnumerator CheckTimeCoroutine()
     {
         while (true)
         {

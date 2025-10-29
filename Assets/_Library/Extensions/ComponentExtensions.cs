@@ -2,7 +2,11 @@ using UnityEngine;
 
 public static class ComponentExtensions
 {
-    public static T GetOrAddComponent<T>(this GameObject obj) where T : UnityEngine.Component
+    public static bool IsDead<T>(this T component) where T : Component
+    {
+        return component == null || (component != null && component.gameObject.activeSelf == false);
+    }
+    public static T GetOrAddComponent<T>(this GameObject obj) where T : Component
     {
         T component = obj.GetComponent<T>();
         if (component == null)

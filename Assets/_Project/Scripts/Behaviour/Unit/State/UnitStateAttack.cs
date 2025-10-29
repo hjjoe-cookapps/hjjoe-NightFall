@@ -1,23 +1,26 @@
-﻿using System.Collections;
-using _Project.Scripts.Defines;
+﻿using _Project.Scripts.Defines;
 using UnityEngine;
 
 public class UnitStateAttack : UnitStateBase
 {
-    private Coroutine _coroutine;
-
     public UnitStateAttack(StateMachine<UnitState> stateMachine, UnitBehaviour context) : base(stateMachine, context)
     {
     }
 
     public override void Enter()
     {
-        _coroutine = _context.StartCoroutine(AttackCoroutine());
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Idle")
+        {
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+        }
+
+        _context.Rigidbody.linearVelocity = Vector2.zero;
     }
 
     public override void Execute()
     {
-
+        Attack();
+        UpdateState();
     }
 
     public override void Exit()
@@ -29,8 +32,14 @@ public class UnitStateAttack : UnitStateBase
 
     }
 
-    private IEnumerator AttackCoroutine()
+    private void Attack()
     {
-        yield return null;
+        if (_context.IsAttackAble)
+        {
+            _context.IsAttackAble = false;
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Attack", false);
+            _context.SkeletonAnimation.AnimationState.AddAnimation(0, "Idle", true, 0);
+            _context.Rotation();
+        }
     }
 }

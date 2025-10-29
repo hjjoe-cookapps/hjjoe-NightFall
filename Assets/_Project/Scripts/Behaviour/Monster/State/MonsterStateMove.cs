@@ -9,9 +9,9 @@ public class MonsterStateMove : MonsterStateBase
 
     public override void Enter()
     {
-        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Idle")
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Move")
         {
-            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Move", true);
         }
         _context.Rotation();
     }

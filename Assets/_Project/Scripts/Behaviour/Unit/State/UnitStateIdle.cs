@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Defines;
+using UnityEngine;
 
 public class UnitStateIdle : UnitStateBase
 {
@@ -8,14 +9,18 @@ public class UnitStateIdle : UnitStateBase
 
     public override void Enter()
     {
-        //_context.Agent.ResetPath();
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Idle")
+        {
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+        }
+
+        _context.Rigidbody.linearVelocity = Vector2.zero;
     }
 
     public override void Execute()
     {
         UpdateState();
     }
-
 
     private void UpdateState()
     {
@@ -27,7 +32,6 @@ public class UnitStateIdle : UnitStateBase
         {
             _context.StateMachine.ChangeState(UnitState.Chase);
         }
-
     }
 }
 

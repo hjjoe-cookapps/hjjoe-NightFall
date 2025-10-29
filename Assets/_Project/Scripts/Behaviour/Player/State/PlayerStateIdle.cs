@@ -9,7 +9,10 @@ public class PlayerStateIdle : PlayerStateBase
 
     public override void Enter()
     {
-        _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Idle")
+        {
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+        }
     }
     public override void Execute()
     {

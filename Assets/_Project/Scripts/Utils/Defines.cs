@@ -32,6 +32,7 @@ namespace _Project.Scripts.Defines
         Idle,
         Chase,
         Attack,
+        Return,
         Dead
     }
 
@@ -50,10 +51,10 @@ namespace _Project.Scripts.Defines
 
     public enum MonsterType
     {
-        Melee,
-        Ranged,
-        Maneater,
-        Sky
+        Monster_1_1_1_Mouse,
+        Monster_1_1_2_Pot,
+        Monster_1_1_3_Bunny,
+        Monster_1_1_Boss_Treeman
     }
 
     public enum BulidingType
@@ -85,19 +86,6 @@ namespace _Project.Scripts.Defines
         public static readonly LayerMask MonsterLayer = LayerMask.GetMask("Monster");
 
         public static readonly float HitRange = 2f;
-
-        public static class Player
-        {
-            public static readonly Quaternion RightRotation =  Quaternion.Euler(0f, 0f, 0f);
-            public static readonly Quaternion LeftRotation =  Quaternion.Euler(0f, 180f, 0f);
-        }
-
-        public static class Monster
-        {
-            public static readonly Quaternion RightRotation =  Quaternion.Euler(0f, 180f, 0f);
-            public static readonly Quaternion LeftRotation =  Quaternion.Euler(0f, 0f, 0f);
-        }
-
     }
 
 }

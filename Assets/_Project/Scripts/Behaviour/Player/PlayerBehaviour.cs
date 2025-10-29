@@ -55,9 +55,9 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     private Vector2 _moveInput;
 
     private List<MonsterBehaviour> _inRadiusMonsters = new();
-    private readonly StateMachine<PlayerState> _stateMachine = new();
-
     private Coroutine _scanRadiusMonsterCoroutine;
+
+    private readonly StateMachine<PlayerState> _stateMachine = new();
 
     #endregion
 
@@ -163,16 +163,13 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         }
     }
 
-    public void OnSkill(InputValue value)
+    public void OnSkill()
     {
-        if (value.isPressed)
+        if (!_isSkillActive)
         {
-            if (!_isSkillActive)
-            {
-                _isSkillActive = true;
-                StartCoroutine(UpdateSkillTime());
-                Debug.Log("Skill start");
-            }
+            _isSkillActive = true;
+            StartCoroutine(UpdateSkillTime());
+            Debug.Log("Skill start");
         }
     }
 

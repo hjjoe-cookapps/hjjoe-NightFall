@@ -10,7 +10,7 @@ public class MonsterStateDead : MonsterStateBase
 
     public override void Enter()
     {
-        _context.RigidBody.linearVelocity = Vector2.zero;
+        _context.Rigidbody.linearVelocity = Vector2.zero;
         _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Death", false);
     }
 

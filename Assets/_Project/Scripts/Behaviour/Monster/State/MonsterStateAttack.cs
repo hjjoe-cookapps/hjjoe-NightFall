@@ -5,27 +5,28 @@ using UnityEngine;
 
 public class MonsterStateAttack : MonsterStateBase
 {
-    private Coroutine _coroutine;
-
     public MonsterStateAttack(StateMachine<MonsterState> stateMachine, MonsterBehaviour context) : base(stateMachine, context)
     {
     }
 
     public override void Enter()
     {
-        _context.RigidBody.linearVelocity = Vector2.zero;
-        _coroutine = _context.StartCoroutine(AttackCoroutine());
+        if (_context.SkeletonAnimation.AnimationState.GetCurrent(0)?.Animation.Name != "Idle")
+        {
+            _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Idle", true);
+        }
+
+        _context.Rigidbody.linearVelocity = Vector2.zero;
     }
 
     public override void Execute()
     {
+        Attack();
         UpdateState();
     }
 
     public override void Exit()
     {
-        _context.StopCoroutine(_coroutine);
-        _coroutine = null;
     }
 
     private void UpdateState()
@@ -40,14 +41,15 @@ public class MonsterStateAttack : MonsterStateBase
         }
     }
 
-    private IEnumerator AttackCoroutine()
+
+    private void Attack()
     {
-        while (true)
+        if (_context.IsAttackAble)
         {
+            _context.IsAttackAble = false;
             _context.SkeletonAnimation.AnimationState.SetAnimation(0, "Attack", false);
-            _context.SkeletonAnimation.AnimationState.AddAnimation(0, "Idle", false, 0);
+            _context.SkeletonAnimation.AnimationState.AddAnimation(0, "Idle", true, 0);
             _context.Rotation();
-            yield return CoroutineManager.WaitForSeconds(_context.Status.Cooltime);
         }
     }
 }
