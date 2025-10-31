@@ -3,15 +3,14 @@ using UnityEngine;
 
 public class HPModule : MonoBehaviour
 {
-    private int _hp;
-    private int _maxhp;
+    private float _hp;
+    private float _maxhp;
 
-    public int HP => _hp;
-    public int MaxHP => _maxhp;
+    public float HP => _hp;
+    public float MaxHP => _maxhp;
 
-    // 수치 관련 UI 처리용
-    public event Action<int> OnDamageEventNumber;
-    public event Action<int> OnHealEventNumber;
+    public event Action OnDamageEvent;
+    public event Action OnHealEvent;
 
     // 객체 동작 처리용
     public event Action<GameObject> OnDamageEventOpponent;
@@ -19,7 +18,7 @@ public class HPModule : MonoBehaviour
     public event Action OnDeadEvent;
 
     // Setup HP
-    public void Init(int hp)
+    public void Init(float hp)
     {
         _maxhp = hp;
         _hp = hp;
@@ -30,25 +29,25 @@ public class HPModule : MonoBehaviour
         _hp = _maxhp;
     }
 
-    public void SetHP(int hp)
+    public void SetHP(float hp)
     {
         _hp = Math.Clamp(hp, 0, _maxhp);
     }
 
-    public void Heal(int heal, GameObject obj)
+    public void Heal(float heal, GameObject obj)
     {
         _hp += heal;
         _hp = Math.Clamp(_hp, 0, _maxhp);
-        OnHealEventNumber?.Invoke(heal);
+        OnHealEvent?.Invoke();
         OnHealEventOpponent?.Invoke(obj);
     }
 
-    public void TakeDamage(int damage, GameObject obj)
+    public void TakeDamage(float damage, GameObject obj)
     {
         _hp -= damage;
         _hp = Math.Clamp(_hp, 0, _maxhp);
 
-        OnDamageEventNumber?.Invoke(damage);
+        OnDamageEvent?.Invoke();
 
         if (_hp <= 0)
         {

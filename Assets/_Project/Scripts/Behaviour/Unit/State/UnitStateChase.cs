@@ -32,7 +32,7 @@ public class UnitStateChase : UnitStateBase
             _context.StateMachine.ChangeState(UnitState.Attack);
 
         }
-        else if (_context.InRangeTarget == null)
+        else if (_context.AnyTarget == null)
         {
             _context.StateMachine.ChangeState(UnitState.Idle);
         }

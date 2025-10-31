@@ -2,15 +2,20 @@
 
 public class WoodBehaviour : MonoBehaviour
 {
-    private static readonly float _moveSpeed = 0.2f;
+    private static readonly float _moveSpeedAcceleration = 0.05f;
     [SerializeField]
     private ActionModule _actionModule;
 
     private GameObject _player;
-
+    private float _moveSpeed;
     private void Awake()
     {
         _actionModule = gameObject.GetOrAddComponent<ActionModule>();
+    }
+
+    private void OnEnable()
+    {
+        _moveSpeed = 0f;
     }
 
     private void Start()
@@ -23,6 +28,8 @@ public class WoodBehaviour : MonoBehaviour
 
     private void Update()
     {
+        _moveSpeed += Time.deltaTime * _moveSpeedAcceleration;
+
         Vector3 direction = _player.transform.position - transform.position;
         float magnitude = direction.magnitude;
 

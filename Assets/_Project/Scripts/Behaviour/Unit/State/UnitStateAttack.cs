@@ -30,7 +30,14 @@ public class UnitStateAttack : UnitStateBase
 
     private void UpdateState()
     {
-
+        if (_context.InRangeTarget == null)
+        {
+            TrackEntry trackEntry = _context.SkeletonAnimation.AnimationState.GetCurrent(0);
+            if (trackEntry.Animation.Name != "Attack")
+            {
+                _context.StateMachine.ChangeState(UnitState.Chase);
+            }
+        }
     }
 
     private void Attack()

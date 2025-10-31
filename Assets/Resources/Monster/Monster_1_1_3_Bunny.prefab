@@ -384,8 +384,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: 0, y: 0.17}
+  m_Radius: 0.2
 --- !u!210 &5787382603281292093
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -453,8 +453,10 @@ MonoBehaviour:
   _skeletonAnimation: {fileID: 3777806931127003386}
   _hpModule: {fileID: 4695794857694766430}
   _centerTransform: {fileID: 8904431192236851881}
+  _slider: {fileID: 8947011832374806426}
   _status:
-    Name: Bunny
+    id: 0
+    MonsterType: 0
     HP: 5
     MoveSpeed: 1
     Damage: 1
@@ -612,3 +614,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6763702847836437503, guid: 4ee58e79722da2f4f8920b832f07f3be, type: 3}
   m_PrefabInstance: {fileID: 5021322931434854452}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8947011832374806426 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4144852355018940334, guid: 4ee58e79722da2f4f8920b832f07f3be, type: 3}
+  m_PrefabInstance: {fileID: 5021322931434854452}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -7,9 +7,8 @@ using UnityEngine;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
-    [Required]
     [SerializeField]
-    private GameObject _castle;
+    private GameObject _castle; // scnene에 Castle이 하나도 없다면 초비상
     [SerializeField]
     private GameObject _player;
 
@@ -26,11 +25,16 @@ public class GameManager : SingletonBehaviour<GameManager>
     private int _currentWaveCount;
 
     // 게임 플레이용 재화
-    private int _wood = 10; // TODO : 10 지우기
+    private int _wood;
 
     #region property
 
-    public GameObject Castle => _castle;
+    public GameObject Castle
+    {
+        get => _castle;
+        set => _castle = value;
+    }
+
     public GameObject Player
     {
         get
@@ -44,7 +48,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
     }
     public IReadOnlyCollection<GameObject> Monsters => _monsters;
-
+    public int CurrentWaveCount => _currentWaveCount;
     public int Wood => _wood;
 
     #endregion
@@ -59,7 +63,9 @@ public class GameManager : SingletonBehaviour<GameManager>
         _buildings = GameObject.FindGameObjectsWithTag("Building").Select(obj => obj.GetComponent<BuildingBehaviour>())
             .ToHashSet();
 
-        _currentWaveCount = 0;
+        _currentWaveCount = 1;
+
+        _status = SpecDataManager.Instance.StageStatus[1]; // TODO: Change
     }
 
     private void Update()
@@ -94,12 +100,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
 
         _waveBehaviour = ResourceManager.Instance.Instantiate("Wave", transform).GetComponent<WaveBehaviour>();
-        _waveBehaviour.Init(_status.Waves[_currentWaveCount]);
+        _waveBehaviour.Init(SpecDataManager.Instance.WaveStatus[_status.Waves[_currentWaveCount - 1]]); // 1부터 시작하므로 -1
 
         StartCoroutine(CheckWave());
     }
 
-    public void EndWave()
+    private void EndWave()
     {
         _waveBehaviour = null;
         ++_currentWaveCount;
@@ -109,10 +115,15 @@ public class GameManager : SingletonBehaviour<GameManager>
             building.EndWave();
         }
 
-        if (_currentWaveCount >= _status.Waves.Count)
+
+        if (_currentWaveCount > _status.Waves.Length)
         {
             Debug.Log("Finish");
             // finish game
+        }
+        else
+        {
+            _waveStartButton.SetActive(true);
         }
     }
 
@@ -129,7 +140,6 @@ public class GameManager : SingletonBehaviour<GameManager>
             if (_waveBehaviour.IsDead() && _monsters.Count == 0)
             {
                 EndWave();
-                _waveStartButton.SetActive(true);
                 yield break;
             }
 

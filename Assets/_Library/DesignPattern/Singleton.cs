@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 
 public abstract class Singleton<T> : IDisposable where T : new()
 {
@@ -24,6 +25,7 @@ public abstract class Singleton<T> : IDisposable where T : new()
             lock (Lock)
             {
                 _instance ??= new T();
+                (_instance as Singleton<T>)?.Init();
             }
 
             return _instance;
@@ -56,6 +58,11 @@ public abstract class Singleton<T> : IDisposable where T : new()
     ~Singleton()
     {
         ReleaseUnmanagedResources();
+    }
+
+    protected virtual void Init()
+    {
+
     }
 
     protected virtual void ReleaseUnmanagedResources()

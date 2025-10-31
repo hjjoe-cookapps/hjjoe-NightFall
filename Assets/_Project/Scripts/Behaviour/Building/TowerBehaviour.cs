@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _Project.Scripts.Defines;
+using CookApps.Inspector;
 using UnityEngine;
 
 public class TowerBehaviour : BuildingBehaviour
 {
     [SerializeField]
     private TowerStatus _towerStatus;
+    [Required]
     [SerializeField]
     private Transform _arrowGenerateTransform;
 
@@ -16,13 +18,6 @@ public class TowerBehaviour : BuildingBehaviour
     private bool _isAttackAble = true;
     private Coroutine _scanRadiusMonsterCoroutine;
     private Coroutine _checkTimeCoroutine;
-
-    //Todo: Temp
-    protected override void Start()
-    {
-        base.Start();
-        StartWave(); // TODO :: 반드시 지워야함 !!!!!!!!!!!!!!!!!!!
-    }
 
     public override void StartWave()
     {
@@ -33,16 +28,16 @@ public class TowerBehaviour : BuildingBehaviour
 
     protected override void Active()
     {
-        if (_inRadiusMonsters.Count > 0 && _isAttackAble)
+        if (Level != 0 && _inRadiusMonsters.Count > 0 && _isAttackAble)
         {
             _isAttackAble = false;
             Attack();
         }
     }
 
-    protected override void OnDestroy()
+    protected override void OnBuildingDestroy()
     {
-        base.OnDestroy();
+        base.OnBuildingDestroy();
         if (_scanRadiusMonsterCoroutine != null)
         {
             StopCoroutine(_scanRadiusMonsterCoroutine);
@@ -53,10 +48,10 @@ public class TowerBehaviour : BuildingBehaviour
 
     private void UpdateRadiusMonsters()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _towerStatus.Range, Defines.MonsterLayer);
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, _towerStatus.Range, Defines.MonsterLayer);
         var inRadiusMonsters = new List<(MonsterBehaviour monster, float dist)>();
 
-        foreach (Collider collider in hitColliders)
+        foreach (Collider2D collider in hitColliders)
         {
             if (collider.gameObject.TryGetComponent(out MonsterBehaviour monsterBehaviour))
             {
@@ -74,12 +69,10 @@ public class TowerBehaviour : BuildingBehaviour
 
         foreach (var monster in targets)
         {
-            ArrowBehaviour arrow = ResourceManager.Instance.Instantiate("Effect/Arrow", _arrowGenerateTransform.position).GetOrAddComponent<ArrowBehaviour>();
+            ArrowBehaviour arrow = ResourceManager.Instance.Instantiate("VFX/Arrow", _arrowGenerateTransform.position).GetOrAddComponent<ArrowBehaviour>();
             arrow.Init(gameObject, _towerStatus.Damage, transform.position, monster.CenterTransform);
         }
-
     }
-
 
     private IEnumerator ScanRadiusMonstersCoroutine()
     {
@@ -104,4 +97,9 @@ public class TowerBehaviour : BuildingBehaviour
         }
     }
 
+    public override void Upgrade()
+    {
+        base.Upgrade();
+        _towerStatus = SpecDataManager.Instance.GetTowerStatus(Level);
+    }
 }

@@ -31,4 +31,23 @@ public static class CoroutineManager
 
         return target;
     }
+
+    public static Coroutine StopAndNullify(this MonoBehaviour monoBehaviour, Coroutine coroutine)
+    {
+        if (coroutine != null)
+        {
+            monoBehaviour.StopCoroutine(coroutine);
+        }
+
+        return null;
+    }
+
+    public static void StopAndNullifyRef(this MonoBehaviour monoBehaviour, ref Coroutine coroutine)
+    {
+        if (coroutine != null)
+        {
+            monoBehaviour.StopCoroutine(coroutine);
+        }
+        coroutine = null;
+    }
 }

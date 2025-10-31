@@ -13,7 +13,7 @@ public class UnitStateReturn : UnitStateBase
 
     public override void Execute()
     {
-
+        Move();
     }
 
     public override void Exit()
@@ -23,12 +23,12 @@ public class UnitStateReturn : UnitStateBase
 
     private void Move()
     {
-        Vector3 direction = _context.Barracks.transform.position - _context.transform.position;
+        Vector3 direction = _context.Barracks.position - _context.transform.position;
         float magnitude = direction.magnitude;
         direction.Normalize();
-        _context.transform.position = _context.transform.position + direction * _context.Status.MoveSpeed;
+        _context.Rigidbody.linearVelocity = direction * _context.Status.MoveSpeed;
 
-        if (magnitude < 0.2f)
+        if (magnitude < 1f)
         {
             _context.StateMachine.ChangeState(UnitState.Idle);
         }

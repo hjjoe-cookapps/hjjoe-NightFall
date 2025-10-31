@@ -12,12 +12,29 @@ public static class Bezier
         float ttt = tt * t;
 
         // B(t) = (1-t)³P₀ + 3(1-t)²tP₁ + 3(1-t)t²P₂ + t³P₃
-        Vector3 p = uuu * p0;          // (1-t)³P₀
-        p += 3 * uu * t * p1;        // 3(1-t)²tP₁
-        p += 3 * u * tt * p2;        // 3(1-t)t²P₂
-        p += ttt * p3;               // t³P₃
-
-        return p;
+        return uuu * p0 +
+               3f * uu * t * p1 +
+               3f * u * tt * p2 +
+               ttt * p3;
     }
+
+    // 3차 베지어 곡선 계산 (2D 버전)
+    public static Vector2 GetBezierPoint2D(float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+    {
+        t = Mathf.Clamp01(t);
+        float u = 1 - t;
+        float uu = u * u;
+        float uuu = uu * u;
+        float tt = t * t;
+        float ttt = tt * t;
+
+
+        // B(t) = (1-t)³P₀ + 3(1-t)²tP₁ + 3(1-t)t²P₂ + t³P₃
+        return uuu * p0 +
+               3f * uu * t * p1 +
+               3f * u * tt * p2 +
+               ttt * p3;
+    }
+
 }
 

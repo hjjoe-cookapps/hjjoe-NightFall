@@ -3,40 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _Project.Scripts.Defines;
+using CookApps.Inspector;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Event = Spine.Event;
 
-[Serializable]
-public struct CharacterStatus
-{
-    public string Name;
-
-    public int HP;
-    public float MoveSpeed;
-    public int RegenerationTime;
-
-    public AttackType AttackType;
-    public bool IsAttackSplash;
-    public int AttackDamage;
-    public int AttackWaitTime;  // 공격 대기시간
-    public float AttackRange;
-    public int AttackTargetCount;
-
-    public bool IsSkillSplash;
-    public int SkillDamage;
-    public int SkillWaitTime;   // 스킬 시전중 공격 대기시간
-    public float SkillRange;
-    public int SkillSpeed;    // 스킬 애니메이션에 대해서 배속으로 제어할 것
-    public int SkillTargetCount;
-    public int SkillTime;   // skill 시전 시간
-    public int SkillCooltime;// skill 쿨타임
-
-};
-
-public class PlayerBehaviour : MonoBehaviour, IAttackAction
+public class PlayerBehaviour : MonoBehaviour, IAttackAction<MonsterBehaviour>
 {
     #region variable
 
@@ -46,13 +21,19 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     private SkeletonAnimation _skeletonAnimation;
     [SerializeField]
     private HPModule _hpModule;
+    [Required]
+    [SerializeField]
+    private Slider _slider;
+
+    private Vector3 _colliderOffset;
+    private Vector2 _moveInput;
 
     [SerializeField]
     private CharacterStatus _status; // Todo:remove
 
-    private bool _isSkillActive = false;
-
-    private Vector2 _moveInput;
+    private bool _isSkillActive;
+    private bool _isAttackAble;
+    private Coroutine _checkAttackTimeCoroutine;
 
     private List<MonsterBehaviour> _inRadiusMonsters = new();
     private Coroutine _scanRadiusMonsterCoroutine;
@@ -66,11 +47,16 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     public HPModule HPModule => _hpModule;
     public CharacterStatus CharacterStatus => _status;
     public bool IsSkillActive => _isSkillActive;
+    public bool IsAttackAble
+    {
+        get => _isAttackAble;
+        set => _isAttackAble = value;
+    }
 
     public Vector2 MoveInput  => _moveInput;
     public bool IsSplash => _isSkillActive ? _status.IsSkillSplash : _status.IsAttackSplash;
-    public int Damage => _isSkillActive ? _status.SkillDamage : _status.AttackDamage;
-    public int WaitTime => _isSkillActive ? _status.SkillWaitTime : _status.AttackWaitTime;
+    public float Damage => _isSkillActive ? _status.SkillDamage : _status.AttackDamage;
+    public float WaitTime => _isSkillActive ? _status.SkillWaitTime : _status.AttackWaitTime;
     public float Range => _isSkillActive ? _status.SkillRange : _status.AttackRange;
     public int TargetCount => _isSkillActive ? _status.SkillTargetCount : _status.AttackTargetCount;
     public List<MonsterBehaviour> InRadiusMonsters => _inRadiusMonsters;
@@ -93,9 +79,15 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
 
     private void Start()
     {
+        _colliderOffset = GetComponent<Collider2D>().offset;
+
         // get data code here
         // _status = ***
         _hpModule.Init(_status.HP);
+
+        _hpModule.OnDamageEvent -= UpdateHpUI;
+        _hpModule.OnDamageEvent += UpdateHpUI;
+
 
         _skeletonAnimation.AnimationState.Event -= Attack;
         _skeletonAnimation.AnimationState.Event += Attack;
@@ -103,8 +95,10 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         _skeletonAnimation.AnimationState.Complete -= OnAnimationComplete;
         _skeletonAnimation.AnimationState.Complete += OnAnimationComplete;
 
-        _stateMachine.ChangeState(PlayerState.Idle);
+        _checkAttackTimeCoroutine = StartCoroutine(CheckAttackTimeCoroutine());
         _scanRadiusMonsterCoroutine = StartCoroutine(ScanRadiusMonsters());
+
+        _stateMachine.ChangeState(PlayerState.Idle);
     }
 
     private void FixedUpdate()
@@ -169,6 +163,10 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         {
             _isSkillActive = true;
             StartCoroutine(UpdateSkillTime());
+
+            _isAttackAble = true;
+            StopCoroutine(_checkAttackTimeCoroutine);
+            _checkAttackTimeCoroutine = StartCoroutine(CheckAttackTimeCoroutine());
             Debug.Log("Skill start");
         }
     }
@@ -207,14 +205,17 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
     private IEnumerator UpdateSkillTime()
     {
         // UI와 시간 동기화 필요
-        yield return CoroutineManager.WaitForSeconds(_status.SkillTime);
+        yield return CoroutineManager.WaitForSeconds(_status.SkillCooltime);
         _isSkillActive = false;
+        _isAttackAble = true;
+        StopCoroutine(_checkAttackTimeCoroutine);
+        _checkAttackTimeCoroutine = StartCoroutine(CheckAttackTimeCoroutine());
         Debug.Log("Skill End");
     }
 
     private void UpdateRadiusMonsters()
     {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, Range, Defines.MonsterLayer);
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position + _colliderOffset, Range, Defines.MonsterLayer);
         var inRadiusMonsters = new List<(MonsterBehaviour monster, float dist)>();
 
         foreach (Collider2D collider in hitColliders)
@@ -239,6 +240,34 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
         }
     }
 
+    private IEnumerator CheckAttackTimeCoroutine()
+    {
+        while (true)
+        {
+            if (!_isAttackAble)
+            {
+                yield return CoroutineManager.WaitForSeconds(WaitTime);
+                _isAttackAble = true;
+            }
+
+            yield return null;
+        }
+    }
+
+    private void UpdateHpUI()
+    {
+        _slider.value = _hpModule.HP / _hpModule.MaxHP;
+
+        if (_hpModule.HP == _hpModule.MaxHP)
+        {
+            _slider.gameObject.SetActive(false);
+        }
+        else
+        {
+            _slider.gameObject.SetActive(true);
+        }
+    }
+
     private void Attack(TrackEntry trackEntry, Event e)
     {
         if (e.Data.Name != "Attack_Hit")
@@ -252,7 +281,7 @@ public class PlayerBehaviour : MonoBehaviour, IAttackAction
             HashSet<MonsterBehaviour> newTargets = new HashSet<MonsterBehaviour>(targets);
             foreach (MonsterBehaviour monster in targets)
             {
-                Collider2D[] hitColliders = Physics2D.OverlapCircleAll(monster.transform.position, Defines.HitRange, Defines.MonsterLayer);
+                Collider2D[] hitColliders = Physics2D.OverlapCircleAll(monster.transform.position + _colliderOffset, Defines.HitRange, Defines.MonsterLayer);
 
                 foreach (Collider2D col in hitColliders)
                 {

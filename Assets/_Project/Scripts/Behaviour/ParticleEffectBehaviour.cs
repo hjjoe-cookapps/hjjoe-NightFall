@@ -42,17 +42,17 @@ public class ParticleEffectBehaviour : MonoBehaviour
         ResourceManager.Instance.Destroy(gameObject);
     }
 
-    public void SetDirection(Direction direction)
-    {
-        if (direction == Direction.Left)
-        {
-            _renderer.flip = new Vector3(1, 0, 0);
-            var main = _particleSystem.main;
-            main.startRotationZ = _initStartRotationZ.constant * -1;
-        }
-        else
-        {
-            _renderer.flip = Vector3.zero;
-        }
-    }
+    //public void SetDirection(Direction direction)
+    //{
+    //    if (direction == Direction.Left)
+    //    {
+    //        _renderer.flip = new Vector3(1, 0, 0);
+    //        var main = _particleSystem.main;
+    //        main.startRotationZ = _initStartRotationZ.constant * -1;
+    //    }
+    //    else
+    //    {
+    //        _renderer.flip = Vector3.zero;
+    //    }
+    //}
 }

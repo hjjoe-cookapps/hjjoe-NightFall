@@ -6,18 +6,26 @@ using UnityEngine.UI;
 
 public class FarmBehaviour : BuildingBehaviour
 {
+    [Header("Farm")]
+    [Required]
+    [SerializeField]
+    private GameObject _earnInfoUI;
+    [Required]
     [SerializeField]
     private TextMeshProUGUI _textMeshProUGUI;
-
     [Required]
     [SerializeField]
     private Image _iconImage;
 
-    private int _earnWood = 1;
-
     private void Awake()
     {
         _textMeshProUGUI = _textMeshProUGUI == null ? gameObject.GetComponentInChildren<TextMeshProUGUI>() : _textMeshProUGUI;
+    }
+
+    public override void StartWave()
+    {
+        base.StartWave();
+        _earnInfoUI.SetActive(false);
     }
 
     public override void EndWave()
@@ -25,7 +33,7 @@ public class FarmBehaviour : BuildingBehaviour
         if (_state != BuildingState.Crash)
         {
             // create currency;
-            for (int i = 0; i < _earnWood; i++)
+            for (int i = 0; i < Level; i++)
             {
                 ResourceManager.Instance.Instantiate("Currency/wood", transform.position);
             }
@@ -36,6 +44,18 @@ public class FarmBehaviour : BuildingBehaviour
             _iconImage.color = Color.red;
         }
 
+        if (Level != 0)
+        {
+            _earnInfoUI.SetActive(true);
+        }
+
         base.EndWave();
+    }
+
+    public override void Upgrade()
+    {
+        base.Upgrade();
+        _earnInfoUI.SetActive(true);
+        _textMeshProUGUI.text = Level.ToString();
     }
 }

@@ -3187,7 +3187,6 @@ GameObject:
   - component: {fileID: 2890265927205305276}
   - component: {fileID: 3101347576802603385}
   - component: {fileID: 5389710163716467560}
-  - component: {fileID: 8991677721002553446}
   m_Layer: 5
   m_Name: Hero
   m_TagString: Untagged
@@ -3265,32 +3264,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &8991677721002553446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4544405126568525477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe3bd53eade7f432291599504a8f3d9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cursor: {fileID: 0}
-  _toggleGroup: {fileID: 0}
-  _toggles:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _pages:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!1 &5001667312362036075
 GameObject:
   m_ObjectHideFlags: 0
@@ -6496,7 +6469,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIItemCardClassTag
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3271531258491082251, guid: e6246a156b60f624f979726a6e3b7bc8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -6708,7 +6682,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1380025225059552921, guid: c444aa23ec90f6642a4998a3e7944f7a, type: 3}
+    - {fileID: 4917086549886149965, guid: c444aa23ec90f6642a4998a3e7944f7a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -6826,7 +6802,16 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 516cc8d54af314148ac9266148cd2622, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5834901504642436431, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 2654752463773755695, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 3703967070655296705, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 1454214247011638050, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 6425263574204621612, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 5399055692588002374, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 9008329455011266553, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 215699957598971691, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 8570913124786023358, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -6944,7 +6929,16 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 8546965f88046cc43a8c461d16179c3b, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5834901504642436431, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 2654752463773755695, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 3703967070655296705, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 1454214247011638050, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 6425263574204621612, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 5399055692588002374, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 9008329455011266553, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 215699957598971691, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 8570913124786023358, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -7058,7 +7052,9 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1380025225059552921, guid: c444aa23ec90f6642a4998a3e7944f7a, type: 3}
+    - {fileID: 4917086549886149965, guid: c444aa23ec90f6642a4998a3e7944f7a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -7172,7 +7168,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIItemEquipCard (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5834901504642436431, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 2654752463773755695, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 1454214247011638050, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 3703967070655296705, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 215699957598971691, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 9008329455011266553, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 5399055692588002374, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 6425263574204621612, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 8570913124786023358, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -7392,7 +7397,16 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 88f42b72798502a47b543ca2d717bee2, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5834901504642436431, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 2654752463773755695, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 5399055692588002374, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 6425263574204621612, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 215699957598971691, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 9008329455011266553, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 3703967070655296705, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 1454214247011638050, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 8570913124786023358, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -7612,7 +7626,16 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 6df4a2a709d17aa4ea47b0f3279ee0d5, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5834901504642436431, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 2654752463773755695, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 6425263574204621612, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 5399055692588002374, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 9008329455011266553, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 215699957598971691, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 3703967070655296705, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 1454214247011638050, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 8570913124786023358, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -7722,7 +7745,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1380025225059552921, guid: c444aa23ec90f6642a4998a3e7944f7a, type: 3}
+    - {fileID: 4917086549886149965, guid: c444aa23ec90f6642a4998a3e7944f7a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -7946,7 +7971,16 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 4dc1932321189cc4c8d05264c841598f, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5834901504642436431, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 2654752463773755695, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 215699957598971691, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 9008329455011266553, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 5399055692588002374, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 6425263574204621612, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 1454214247011638050, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 3703967070655296705, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
+    - {fileID: 8570913124786023358, guid: b2068dbe1400ce34db48fd3a71837b86, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

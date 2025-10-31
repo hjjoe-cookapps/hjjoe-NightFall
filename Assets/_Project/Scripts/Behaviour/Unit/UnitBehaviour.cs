@@ -3,31 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _Project.Scripts.Defines;
+using CookApps.Inspector;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
+using UnityEngine.UI;
+using Event = Spine.Event;
 
-[Serializable]
-public struct UnityStatus
-{
-    public string Name;
-
-    public int HP;
-    public float MoveSpeed;
-
-    public AttackType AttackType;
-    public bool IsAttackSplash;
-
-    public int AttackDamage;
-    public float WaitTime;  // 공격 대기시간
-    public float Range;
-}
-
-public class UnitBehaviour : MonoBehaviour
+public abstract class UnitBehaviour : MonoBehaviour , IAttackAction<MonsterBehaviour>
 {
     #region variable
 
-    public event Action<GameObject> OnDeadEvent;
+    public event Action<UnitBehaviour> OnDeadEvent;
+
+    [Required]
+    private UnitType _unitType;
 
     [SerializeField]
     private Rigidbody2D _rigidbody;
@@ -35,13 +25,18 @@ public class UnitBehaviour : MonoBehaviour
     private SkeletonAnimation _skeletonAnimation;
     [SerializeField]
     private HPModule _hpModule;
+    [Required]
+    [SerializeField]
+    private Slider _slider;
 
     [SerializeField]
-    private UnityStatus _status;
-    [SerializeField] // TODO : Erase
-    private GameObject _barracks; // unit 생성 배럭 지정
-    private GameObject _anyTarget; // 몬스터 아무거나
-    private GameObject _inRangeTarget; //
+    protected UnitStatus _status;
+    private Transform _barracks; // unit 생성 배럭 지정
+
+    private Vector3 _colliderOffset;
+
+    private MonsterBehaviour _anyTarget; // 몬스터 아무거나
+    private MonsterBehaviour _inRangeTarget;
 
     private bool _isWaveStart;
     private Coroutine _scanMonsterCoroutine;
@@ -56,19 +51,20 @@ public class UnitBehaviour : MonoBehaviour
 
     #region property
 
+    public UnitType UnitType => _unitType;
     public Rigidbody2D Rigidbody => _rigidbody;
     public SkeletonAnimation SkeletonAnimation => _skeletonAnimation;
     public HPModule HPModule => _hpModule;
 
-    public UnityStatus Status => _status;
+    public UnitStatus Status => _status;
 
-    public GameObject Barracks
+    public Transform Barracks
     {
         get => _barracks;
         set => _barracks = value;
     }
-    public GameObject AnyTarget => _anyTarget;
-    public  GameObject InRangeTarget => _inRangeTarget;
+    public MonsterBehaviour AnyTarget => _anyTarget;
+    public  MonsterBehaviour InRangeTarget => _inRangeTarget;
     public bool IsWaveStart => _isWaveStart;
     public bool IsAttackAble
     {
@@ -90,18 +86,28 @@ public class UnitBehaviour : MonoBehaviour
         _stateMachine.RegisterState<UnitStateIdle>(UnitState.Idle, this);
         _stateMachine.RegisterState<UnitStateChase>(UnitState.Chase, this);
         _stateMachine.RegisterState<UnitStateAttack>(UnitState.Attack, this);
+        _stateMachine.RegisterState<UnitStateReturn>(UnitState.Return, this);
         _stateMachine.RegisterState<UnitStateDead>(UnitState.Dead, this);
-    }
-
-    private void OnEnable()
-    {
-        _hpModule.Init(_status.HP);
     }
 
     private void Start()
     {
+        Enum.TryParse(gameObject.name, out _unitType);
+        _status = SpecDataManager.Instance.GetUnitStatus(_unitType);
+
+        _colliderOffset = GetComponent<Collider2D>().offset;
+
+        _hpModule.OnDeadEvent -= OnDead;
+        _hpModule.OnDeadEvent += OnDead;
+
+        _hpModule.OnDamageEvent -= UpdateHpUI;
+        _hpModule.OnDamageEvent += UpdateHpUI;
+
         _skeletonAnimation.AnimationState.Complete -= OnAnimationComplete;
         _skeletonAnimation.AnimationState.Complete += OnAnimationComplete;
+
+        _skeletonAnimation.AnimationState.Event -= Attack;
+        _skeletonAnimation.AnimationState.Event += Attack;
 
         _stateMachine.ChangeState(UnitState.Idle);
     }
@@ -112,10 +118,17 @@ public class UnitBehaviour : MonoBehaviour
         UpdateAnytargetMonster();
     }
 
+    private void OnDisable()
+    {
+        OnDeadEvent?.Invoke(this);
+        OnDeadEvent = null;
+    }
+
     #endregion
 
     public void StartWave()
     {
+        _hpModule.Init(_status.HP);
         _isWaveStart = true;
         _scanMonsterCoroutine = StartCoroutine(ScanMonsterCoroutine());
         _checkAttackTimeCoroutine = StartCoroutine(CheckAttackTimeCoroutine());
@@ -135,12 +148,30 @@ public class UnitBehaviour : MonoBehaviour
     public void Move()
     {
         Vector2 velocity = Vector2.zero;
-        if (_anyTarget != null && _anyTarget.activeInHierarchy)
+        if (_anyTarget != null && _anyTarget.gameObject.activeInHierarchy)
         {
             velocity = _anyTarget.transform.position - transform.position;
         }
 
         _rigidbody.linearVelocity = velocity.normalized * _status.MoveSpeed;
+    }
+
+    private void OnDead()
+    {
+        _stateMachine.ChangeState(UnitState.Dead);
+    }
+
+    private void UpdateHpUI()
+    {
+        _slider.value = _hpModule.HP / _hpModule.MaxHP;
+        if (_hpModule.HP == _hpModule.MaxHP)
+        {
+            _slider.gameObject.SetActive(false);
+        }
+        else
+        {
+            _slider.gameObject.SetActive(true);
+        }
     }
 
     public void Rotation()
@@ -152,7 +183,7 @@ public class UnitBehaviour : MonoBehaviour
             case UnitState.Idle:
                 break;
             case UnitState.Chase:
-                if(_anyTarget != null && _anyTarget.activeSelf)
+                if(_anyTarget != null && _anyTarget.gameObject.activeSelf)
                 {
                     scaleX = transform.position.x < _anyTarget.transform.position.x ? 1 : -1;
                 }
@@ -198,6 +229,32 @@ public class UnitBehaviour : MonoBehaviour
         }
     }
 
+    private void Attack(TrackEntry trackEntry, Event e)
+    {
+        if (e.Data.Name != "Attack_Hit")
+        {
+            return;
+        }
+
+        // 애니메이터에 의해 공격 애니메이션 중 발생하는 함수
+        if (_inRangeTarget == null || !_inRangeTarget.gameObject.activeSelf)
+        {
+            return;
+        }
+
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position + _colliderOffset,
+            _status.Range, Defines.MonsterLayer);
+
+        foreach (Collider2D col in hitColliders)
+        {
+            if (col.gameObject == _inRangeTarget.gameObject)
+            {
+                this.AttackAction(new HashSet<MonsterBehaviour>{_inRangeTarget});
+                break;
+            }
+        }
+    }
+
     //TODO : Optimize
     private void UpdateAnytargetMonster()
     {
@@ -206,7 +263,7 @@ public class UnitBehaviour : MonoBehaviour
             return;
         }
 
-        if (_anyTarget != null && _anyTarget.activeSelf)
+        if (_anyTarget != null && _anyTarget.gameObject.activeSelf)
         {
             return;
         }
@@ -221,7 +278,7 @@ public class UnitBehaviour : MonoBehaviour
         if (targets.Count > 0)
         {
             // list를 order순으로 정렬해서 저장
-            _anyTarget = targets.OrderBy(md => md.dist).Select(md => md.target).First();
+            _anyTarget = targets.OrderBy(md => md.dist).Select(md => md.target).FirstOrDefault()?.GetComponent<MonsterBehaviour>();
         }
         else
         {
@@ -231,14 +288,17 @@ public class UnitBehaviour : MonoBehaviour
 
     private void UpdateRadiusMonster()
     {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position,
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position + _colliderOffset,
             _status.Range, Defines.MonsterLayer);
 
-        var inRadiusTargets = new List<(GameObject target, float dist)>();
+        var inRadiusTargets = new List<(MonsterBehaviour target, float dist)>();
 
-        foreach (Collider2D collider in hitColliders)
+        foreach (Collider2D col in hitColliders)
         {
-            inRadiusTargets.Add((collider.gameObject, (transform.position - collider.transform.position).sqrMagnitude));
+            if (col.gameObject.TryGetComponent(out MonsterBehaviour monsterBehaviour))
+            {
+                inRadiusTargets.Add((monsterBehaviour, (transform.position - col.transform.position).sqrMagnitude));
+            }
         }
 
         if (inRadiusTargets.Count > 0)
@@ -265,5 +325,14 @@ public class UnitBehaviour : MonoBehaviour
             yield return null;
         }
     }
+
+
+    #region IAttackAction
+
+    public abstract void AttackAction(HashSet<MonsterBehaviour> targets);
+
+    public abstract  void SkillAction(HashSet<MonsterBehaviour> targets);
+
+    #endregion
 }
 

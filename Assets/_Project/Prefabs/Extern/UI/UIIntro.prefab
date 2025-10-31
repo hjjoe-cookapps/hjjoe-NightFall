@@ -732,7 +732,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3881087803549984436}
-  - component: {fileID: 768280895783651590}
   - component: {fileID: 6861634559622656226}
   m_Layer: 5
   m_Name: UIIntro
@@ -765,23 +764,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 1}
---- !u!114 &768280895783651590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3881087803549984437}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 855890c8f2a438a489f755c86a9a70ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _button: {fileID: 1744047034137059594}
-  _contents: {fileID: 8558015474354869324}
-  _textDescription: {fileID: 1553660879059583509}
-  _goTextBox: {fileID: 5747996556319815713}
-  _canvasGroup: {fileID: 6861634559622656226}
 --- !u!225 &6861634559622656226
 CanvasGroup:
   m_ObjectHideFlags: 0

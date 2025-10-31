@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using _Project.Scripts.Defines;
 using UnityEngine;
 
@@ -24,16 +25,16 @@ public class WaveBehaviour : MonoBehaviour
 
     private IEnumerator Wave()
     {
-        for (int i = 0; i < _status.Troops.Count; i++)
+        for (int i = 0; i < _status.Troops.Length; i++)
         {
-            GenerateGenerators(i);
+            GenerateGenerators(_status.Troops[i]);
 
             while (_generators.Count != 0)
             {
                 yield return null;
             }
 
-            if (i != _status.Troops.Count - 1)
+            if (i != _status.Troops.Length - 1)
             {
                 yield return new WaitForSeconds(_troopDelay);
             }
@@ -42,10 +43,12 @@ public class WaveBehaviour : MonoBehaviour
         ResourceManager.Instance.Destroy(gameObject);
     }
 
-    private void GenerateGenerators(int currentTroopCount)
+    private void GenerateGenerators(int TroopID)
     {
-        foreach (GeneratorStatus status in _status.Troops[currentTroopCount].Generators)
+        List<int> generatorIDs = SpecDataManager.Instance.TroopStatus[TroopID].Generators.ToList();
+        foreach(int id in generatorIDs)
         {
+            GeneratorStatus status = SpecDataManager.Instance.GeneratorStatus[id];
             var generator = ResourceManager.Instance.Instantiate("Generator", transform).GetOrAddComponent<GeneratorBehaviour>();
             generator.Init(status);
             generator.OnDisableAction -= OnGeneratorDestroyAction;

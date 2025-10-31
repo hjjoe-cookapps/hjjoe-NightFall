@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class ArrowBehaviour : MonoBehaviour
 {
-    private static readonly float _travelDuration = 1.0f;
-    private static readonly float _initialLift = 10f;
-    private static readonly float _finalDrop = 1f;
+    private static readonly float _travelDuration = 1.5f;
+    private static readonly float _initialLift = 3f;
+    private static readonly float _finalDrop = 0.5f;
 
 
     private GameObject _creator;
-    private int _damage;
+    private float _damage;
     private Vector3 _startPosition;
     private Transform _target;
     private Vector3 _targetPosition; //_target 사망시 도착 위치 update없이 이동후 삭제 처리
@@ -28,7 +28,7 @@ public class ArrowBehaviour : MonoBehaviour
         BezierMovement();
     }
 
-    public void Init(GameObject creator, int damage, Vector3 startPosition, Transform target)
+    public void Init(GameObject creator, float damage, Vector3 startPosition, Transform target)
     {
         _creator = creator;
         _damage = damage;
@@ -44,6 +44,7 @@ public class ArrowBehaviour : MonoBehaviour
         if (_target != null && _target.gameObject.activeSelf)
         {
             _targetPosition = _target.transform.position;
+            _controlPoint2 = _target.transform.position + Vector3.up * _finalDrop;
         }
     }
 
@@ -56,6 +57,10 @@ public class ArrowBehaviour : MonoBehaviour
         {
             t = 1f;
             Hit();
+
+            // TODO : ChangeEffect;
+            ResourceManager.Instance.Instantiate("Effect/Smoke_burst_1", transform.position);
+            ResourceManager.Instance.Destroy(gameObject);
             return;
         }
 
@@ -67,7 +72,7 @@ public class ArrowBehaviour : MonoBehaviour
 
         transform.position = currentPosition;
 
-        Vector3 nextPosition = Bezier.GetBezierPoint(t + 0.1f,
+        Vector3 nextPosition = Bezier.GetBezierPoint(t + 0.01f,
             _startPosition,
             _controlPoint1,
             _controlPoint2,
@@ -77,19 +82,13 @@ public class ArrowBehaviour : MonoBehaviour
 
         if (tangentDirection != Vector3.zero)
         {
-            // A. 카메라 정보 가져오기
-            Vector3 cameraLook = Camera.main.transform.forward; // 카메라의 Look Vector (L)
-            Vector3 cameraUp = Camera.main.transform.up;       // 카메라의 Up Vector (U)
+// Vector2 방향을 오일러 각도로 변환합니다. (Y축 회전)
+            // Mathf.Atan2(y, x)를 사용하여 라디안 각도를 얻은 후, Degree로 변환합니다.
+            float angle = Mathf.Atan2(tangentDirection.y, tangentDirection.x) * Mathf.Rad2Deg;
 
-            Vector3 projected = tangentDirection - Vector3.Dot(tangentDirection, cameraLook) * cameraLook;
-
-            if (projected.sqrMagnitude > 0.0001f) // 유효한 벡터인지 확인
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(projected, cameraUp);
-                Quaternion rotationOffset = Quaternion.Euler(0, -90f, 0);
-
-                transform.rotation = targetRotation * rotationOffset;
-            }
+            // 스프라이트가 기본적으로 오른쪽(X축)을 바라보도록 설정된 경우
+            // Z축을 기준으로 angle만큼 회전합니다.
+            transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
     }
 
@@ -103,10 +102,5 @@ public class ArrowBehaviour : MonoBehaviour
                 module.TakeDamage(_damage, _creator);
             }
         }
-
-        // TODO : ChangeEffect;
-        ResourceManager.Instance.Instantiate("Effect/Smoke_burst_1", transform.position);
-        ResourceManager.Instance.Destroy(gameObject);
-
     }
 }

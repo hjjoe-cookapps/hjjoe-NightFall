@@ -196,7 +196,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
-  m_Mass: 1
+  m_Mass: 0.07068584
   m_LinearDamping: 20
   m_AngularDamping: 0.05
   m_GravityScale: 0
@@ -239,8 +239,10 @@ MonoBehaviour:
   _skeletonAnimation: {fileID: 4468703259882872477}
   _hpModule: {fileID: 2541962287410748349}
   _centerTransform: {fileID: 5596204602253583653}
+  _slider: {fileID: 2660496167821493507}
   _status:
-    Name: Mouse
+    id: 0
+    MonsterType: 0
     HP: 5
     MoveSpeed: 1.3
     Damage: 1
@@ -607,6 +609,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee58e79722da2f4f8920b832f07f3be, type: 3}
+--- !u!114 &2660496167821493507 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4144852355018940334, guid: 4ee58e79722da2f4f8920b832f07f3be, type: 3}
+  m_PrefabInstance: {fileID: 2120775868901071533}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4662348821584879954 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6763702847836437503, guid: 4ee58e79722da2f4f8920b832f07f3be, type: 3}

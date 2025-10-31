@@ -2,7 +2,7 @@
 using System.Collections;
 using _Project.Scripts.Defines;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 
 public class GeneratorBehaviour : MonoBehaviour
 {
@@ -27,14 +27,18 @@ public class GeneratorBehaviour : MonoBehaviour
 
     private IEnumerator GenerateMonster()
     {
-        for (int i = 0; i < _status.GenerateCount; ++i)
+        Vector3 position = new Vector3(_status.X, _status.Y, 0);
+        for (int i = 0; i < _status.Count; ++i)
         {
-           MonsterBehaviour monster = ResourceManager.Instance.Instantiate("Monster/" + _status.Type.ToDescription(), _status.Position).GetComponent<MonsterBehaviour>();
-           GameManager.Instance.AddMonster(monster.gameObject);
-           monster.OnDeadEvent -= GameManager.Instance.OnMonsterDisableAction;
-           monster.OnDeadEvent += GameManager.Instance.OnMonsterDisableAction;
+            Vector2 randomDir2D = Random.insideUnitCircle.normalized * 0.5f;
+            MonsterBehaviour monster = ResourceManager.Instance
+                .Instantiate("Monster/" + _status.Type.ToDescription(), position + (Vector3)randomDir2D)
+                .GetComponent<MonsterBehaviour>();
+            GameManager.Instance.AddMonster(monster.gameObject);
+            monster.OnDeadEvent -= GameManager.Instance.OnMonsterDisableAction;
+            monster.OnDeadEvent += GameManager.Instance.OnMonsterDisableAction;
 
-           yield return CoroutineManager.WaitForSeconds(_generateDelay);
+            yield return CoroutineManager.WaitForSeconds(_generateDelay);
         }
 
         ResourceManager.Instance.Destroy(gameObject);

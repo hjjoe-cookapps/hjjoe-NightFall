@@ -874,7 +874,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3881087803549984436}
-  - component: {fileID: 6080931792723137828}
   m_Layer: 5
   m_Name: UIStage
   m_TagString: Untagged
@@ -908,21 +907,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -114}
   m_SizeDelta: {x: 620, y: 80}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &6080931792723137828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3881087803549984437}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8353e10f5bcf75449b533e483cc7637d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _textStage: {fileID: 3392370989850374452}
-  _textProgress: {fileID: 2848495265489825572}
-  _sliderStage: {fileID: 6821211189169528563}
 --- !u!1 &4843755435200322435
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,29 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _Project.Scripts.Defines;
+using CookApps.Inspector;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
+using UnityEngine.UI;
 using Event = Spine.Event;
-using MonsterState = _Project.Scripts.Defines.MonsterState;
 
-[Serializable]
-public struct MonsterStatus
-{
-    public string Name;
-
-    public int HP;
-    public float MoveSpeed;
-
-    public int Damage;
-    public float WaitTime;
-    public float Range;
-};
 
 public class MonsterBehaviour : MonoBehaviour
 {
     #region variable
+
     public event Action<GameObject> OnDeadEvent;
+
+    private MonsterType _monsterType;
 
     [SerializeField]
     private Rigidbody2D _rigidbody;
@@ -35,10 +27,15 @@ public class MonsterBehaviour : MonoBehaviour
     private HPModule _hpModule;
     [SerializeField]
     private Transform _centerTransform;
+    [Required]
+    [SerializeField]
+    private Slider _slider;
 
     //Todo: SerializedField 삭제할것, 테스트 용임
     [SerializeField]
     private MonsterStatus _status;
+
+    private Vector3 _colliderOffset;
 
     private GameObject _mainTarget;
     private GameObject _inRangeTarget;
@@ -106,6 +103,12 @@ public class MonsterBehaviour : MonoBehaviour
 
     private void Start()
     {
+        Enum.TryParse(gameObject.name, out _monsterType);
+        _status = SpecDataManager.Instance.GetMonsterStatus(_monsterType);
+        _hpModule.Init(_status.HP);
+
+        _colliderOffset = GetComponent<Collider2D>().offset;
+
         _skeletonAnimation.AnimationState.Event -= Attack;
         _skeletonAnimation.AnimationState.Event += Attack;
 
@@ -114,6 +117,9 @@ public class MonsterBehaviour : MonoBehaviour
 
         _hpModule.OnDamageEventOpponent -= OnDamaged;
         _hpModule.OnDamageEventOpponent += OnDamaged;
+
+        _hpModule.OnDamageEvent -= UpdateHpUI;
+        _hpModule.OnDamageEvent += UpdateHpUI;
 
         _hpModule.OnDeadEvent -= OnDead;
         _hpModule.OnDeadEvent += OnDead;
@@ -132,6 +138,7 @@ public class MonsterBehaviour : MonoBehaviour
     private void OnDisable()
     {
         OnDeadEvent?.Invoke(gameObject);
+        OnDeadEvent = null;
         StopAllCoroutines();
     }
 
@@ -202,7 +209,7 @@ public class MonsterBehaviour : MonoBehaviour
         _stateMachine.ChangeState(MonsterState.Dead);
     }
 
-    public void OnDamaged(GameObject target)
+    private void OnDamaged(GameObject target)
     {
 
         // 공격 당한 경우, 공격 당한 상태가 아닐 경우 상대방을 추적대상으로 선정
@@ -225,6 +232,20 @@ public class MonsterBehaviour : MonoBehaviour
 
     }
 
+    private void UpdateHpUI()
+    {
+        _slider.value = _hpModule.HP / _hpModule.MaxHP;
+
+        if (_hpModule.HP == _hpModule.MaxHP)
+        {
+            _slider.gameObject.SetActive(false);
+        }
+        else
+        {
+            _slider.gameObject.SetActive(true);
+        }
+    }
+
     private void Attack(TrackEntry trackEntry, Event e)
     {
         if (e.Data.Name != "Attack_Hit")
@@ -239,7 +260,7 @@ public class MonsterBehaviour : MonoBehaviour
             return;
         }
 
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position,
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position + _colliderOffset,
             _status.Range, Defines.FriendLayer);
 
         foreach (Collider2D col in hitColliders)
@@ -247,8 +268,11 @@ public class MonsterBehaviour : MonoBehaviour
             if (col.gameObject == _inRangeTarget)
             {
                 _inRangeTarget.GetRoot().GetComponent<HPModule>()?.TakeDamage(_status.Damage, gameObject);
+                Debug.Log("Monster Attack");
+                break;
             }
         }
+
     }
 
     private void OnAnimationComplete(TrackEntry trackEntry)
@@ -265,7 +289,7 @@ public class MonsterBehaviour : MonoBehaviour
 
     private void UpdateRadiusTargets()
     {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position,
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position + _colliderOffset,
             _status.Range, Defines.FriendLayer);
 
         var inRadiusTargets = new List<(GameObject target, float dist)>();
